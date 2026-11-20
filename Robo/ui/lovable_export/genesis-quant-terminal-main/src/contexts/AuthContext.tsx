@@ -1,7 +1,7 @@
 ﻿import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 interface AuthContextType {
-  user: { id: string; email: string } | null;
+  user: { id: string; email: string; role?: string } | null;
   session: { access_token: string } | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -13,7 +13,7 @@ const LOCAL_AUTH_KEY = "genesis_quant_auth";
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8010";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<{ id: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ id: string; email: string; role?: string } | null>(null);
   const [session, setSession] = useState<{ access_token: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const raw = localStorage.getItem(LOCAL_AUTH_KEY);
         const parsed = raw ? JSON.parse(raw) as {
-          user?: { id: string; email: string };
+          user?: { id: string; email: string; role?: string };
           session?: { access_token: string };
         } : null;
         const accessToken = parsed?.session?.access_token;

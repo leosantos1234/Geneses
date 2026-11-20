@@ -71,6 +71,9 @@ async function requestJson<T>(path: string, body: unknown): Promise<T> {
 
 
 export const api = {
+  users: () => request<Array<{ id: string; email: string; role: string; is_active: boolean }>>("/api/auth/users"),
+  createUser: (payload: { email: string; password: string; role: "admin" | "viewer" }) =>
+    requestJson<{ user: { id: string; email: string; role: string } }>("/api/auth/users", payload),
   health: () => request<HealthResponse>("/api/ui/health"),
 
   summary: (params: { days?: number; symbol?: string }) => request<TradeSummary>("/api/ui/summary", params as any),

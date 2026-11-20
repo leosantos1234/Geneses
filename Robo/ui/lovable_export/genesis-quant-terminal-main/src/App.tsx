@@ -11,6 +11,7 @@ import PositionsPage from "@/pages/PositionsPage";
 import TradesPage from "@/pages/TradesPage";
 import TradeDetailPage from "@/pages/TradeDetailPage";
 import RiskSettingsPage from "@/pages/RiskSettingsPage";
+import UsersPage from "@/pages/UsersPage";
 import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/NotFound";
 
@@ -44,6 +45,7 @@ const App = () => (
                       <Route path="/trades" element={<TradesPage />} />
                       <Route path="/trades/:tradeId" element={<TradeDetailPage />} />
                       <Route path="/settings/risk" element={<RiskSettingsPage />} />
+                      <Route path="/settings/users" element={<UsersPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </AppLayout>

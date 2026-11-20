@@ -6,6 +6,7 @@ import {
   History,
   Shield,
   Activity,
+  Users,
   Menu,
   X,
   LogOut,
@@ -32,6 +33,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     navigate("/auth", { replace: true });
   };
 
+  const visibleNavItems = user?.role === "admin"
+    ? [...navItems, { title: "Usuários", url: "/settings/users", icon: Users }]
+    : navItems;
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       {mobileOpen && (
@@ -53,7 +58,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 space-y-0.5 px-2 py-3">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.url}
               to={item.url}
@@ -93,7 +98,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <Menu className="h-5 w-5 text-muted-foreground" />
           </button>
           <h1 className="text-sm font-medium text-foreground truncate">
-            {navItems.find((n) => location.pathname.startsWith(n.url))?.title || "Genesis Quant"}
+            {[...visibleNavItems].find((n) => location.pathname.startsWith(n.url))?.title || "Genesis Quant"}
           </h1>
         </header>
 
