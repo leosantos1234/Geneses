@@ -55,8 +55,13 @@ class WorkerSelectionRequest(BaseModel):
 
 @app.post("/api/auth/login")
 def login(payload: LoginRequest) -> dict[str, Any]:
-    user = authenticate(payload.email, payload.password)
-    return {"user": user, "access_token": issue_token(user), "token_type": "bearer"}
+    try:
+        user = authenticate(payload.email, payload.password)
+        return {"user": user, "access_token": issue_token(user), "token_type": "bearer"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Serviço de autenticação indisponível: {type(exc).__name__}") from exc
 
 @app.get("/api/auth/me")
 def current_user(user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
