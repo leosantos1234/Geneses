@@ -34,8 +34,14 @@ def _stop(asset: str) -> None:
 
 
 def _start(asset: str, strategy: str) -> None:
-    if asset in children and children[asset].poll() is None:
-        return
+    existing = children.get(asset)
+    if existing is not None:
+        if existing.poll() is None:
+            return
+        # O filho pode ter terminado entre duas iterações. Registre-o antes
+        # de substituí-lo, senão o motivo da queda fica perdido.
+        _log_child_exit(asset, existing)
+        children.pop(asset, None)
     env = os.environ.copy()
     env["ATIVOS"] = f"{asset}USDT"
     env["GENESIS_STRATEGY_SELECTION"] = strategy
