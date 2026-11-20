@@ -76,6 +76,12 @@ services:
         value: "true"
       - key: GENESIS_LIVE_EXECUTION_AUTHORIZATION
         value: I_UNDERSTAND_REAL_TRADING
+      - key: TELEGRAM_ENABLED
+        value: "true"
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_SUPERVISOR_USER_ID
+        sync: false
       - key: GENESIS_REMOTE_WORKER_CONTROL
         value: "true"
       - key: GENESIS_ASSET_LIST
