@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 
 from ui_backend import repository
+from banco_trade.db_trades import inicializar_banco
 
 ROOT = Path(__file__).resolve().parent
 children: dict[str, subprocess.Popen] = {}
@@ -54,6 +55,8 @@ def _shutdown(_signum, _frame) -> None:
 def main() -> None:
     signal.signal(signal.SIGTERM, _shutdown)
     signal.signal(signal.SIGINT, _shutdown)
+    inicializar_banco()
+    print("Schema operacional PostgreSQL verificado antes dos ativos", flush=True)
     repository.ensure_ui_worker_states_table()
     print(f"Render worker dispatcher ativo; assets={','.join(_assets())}", flush=True)
     while True:
