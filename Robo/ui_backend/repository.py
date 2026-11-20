@@ -420,7 +420,7 @@ def get_control_center(*, days: int = 30) -> dict[str, Any]:
     conn = _get_conn(read_only=True)
     try:
         since = _iso_since(days)
-        assets = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "BNBUSDT"]
+        assets = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "BNBUSDT", "AVAXUSDT"]
         asset_rows: dict[str, dict[str, Any]] = {a: {"symbol": a, "regime": None, "regime_label": "Sem leitura", "confidence": None, "last_seen": None, "raw_breakouts": 0, "blocked": 0, "candidates": 0} for a in assets}
 
         if _table_exists(conn, "regime_evaluations"):

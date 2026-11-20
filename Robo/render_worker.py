@@ -15,7 +15,7 @@ children: dict[str, subprocess.Popen] = {}
 
 
 def _assets() -> list[str]:
-    return [item.strip().upper() for item in os.getenv("GENESIS_ASSET_LIST", "BTC,ETH,BNB,SOL,XRP").split(",") if item.strip()]
+    return [item.strip().upper() for item in os.getenv("GENESIS_ASSET_LIST", "BTC,ETH,BNB,SOL,XRP,AVAX").split(",") if item.strip()]
 
 
 def _stop(asset: str) -> None:

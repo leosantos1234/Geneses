@@ -24,7 +24,7 @@ services:
       - key: GENESIS_REMOTE_WORKER_CONTROL
         value: "true"
       - key: GENESIS_ASSET_LIST
-        value: BTC,ETH,BNB,SOL,XRP
+        value: BTC,ETH,BNB,SOL,XRP,AVAX
 
   - type: web
     name: genesis-panel
@@ -71,7 +71,7 @@ services:
       - key: GENESIS_REMOTE_WORKER_CONTROL
         value: "true"
       - key: GENESIS_ASSET_LIST
-        value: BTC,ETH,BNB,SOL,XRP
+        value: BTC,ETH,BNB,SOL,XRP,AVAX
 
 databases:
   - name: genesis-db
