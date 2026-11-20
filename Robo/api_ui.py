@@ -211,7 +211,7 @@ def workers(_user: dict[str, str] = Depends(require_auth)) -> list[dict[str, Any
 
 
 @app.post("/api/ui/workers/start")
-def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
     if not payload.assets:
         raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
     try:
@@ -227,7 +227,7 @@ def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depen
 
 
 @app.post("/api/ui/workers/stop")
-def stop_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+def stop_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
     if not payload.assets:
         raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
     try:
