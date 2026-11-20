@@ -44,9 +44,15 @@ services:
         fromDatabase:
           name: genesis-db
           property: connectionString
-      - key: BYBIT_API_KEY
+      - key: ACTIVE_EXCHANGE
+        value: okx
+      - key: OKX_READ_ONLY
+        value: "true"
+      - key: OKX_API_KEY
         sync: false
-      - key: BYBIT_API_SECRET
+      - key: OKX_API_SECRET
+        sync: false
+      - key: OKX_API_PASSPHRASE
         sync: false
       - key: OPENAI_API_KEY
         sync: false
@@ -56,8 +62,6 @@ services:
         value: "false"
       - key: ALLOW_EXCHANGE_WRITE
         value: "false"
-      - key: BYBIT_TESTNET
-        value: "true"
 
 databases:
   - name: genesis-db
