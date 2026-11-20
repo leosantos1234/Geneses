@@ -10,7 +10,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const LOCAL_AUTH_KEY = "genesis_quant_auth";
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8010";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://genesis-panel-api.onrender.com";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<{ id: string; email: string; role?: string } | null>(null);

@@ -11,7 +11,7 @@ import type {
   WorkerStatus,
 } from "@/types/api";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8010";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://genesis-panel-api.onrender.com";
 
 class ApiError extends Error {
   status: number;
