@@ -51,7 +51,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         )}
       >
         <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4 lg:justify-center lg:px-0">
-          <Activity className="h-5 w-5 text-primary" />
+          <img src="/genesis-logo.svg" alt="Genesis Quant" className="h-7 w-7 shrink-0 rounded-lg" />
           <span className="text-sm font-semibold tracking-tight text-foreground lg:hidden">Genesis Quant</span>
           <button className="ml-auto lg:hidden" onClick={() => setMobileOpen(false)}>
             <X className="h-4 w-4 text-muted-foreground" />
