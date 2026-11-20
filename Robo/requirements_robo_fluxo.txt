@@ -4,6 +4,7 @@ python-dotenv
 pandas
 numpy
 requests
+dash==2.18.2
 openai
 pybit
 joblib
