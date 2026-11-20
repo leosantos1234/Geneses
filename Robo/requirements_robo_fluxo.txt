@@ -8,6 +8,7 @@ openai
 pybit
 joblib
 scikit-learn
+tensorflow==2.18.0
 xgboost
 plotly
 matplotlib==3.10.0
