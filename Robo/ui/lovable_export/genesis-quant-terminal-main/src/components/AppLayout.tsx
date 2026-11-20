@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   LogOut,
+  UserCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -97,9 +98,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <button className="lg:hidden" onClick={() => setMobileOpen(true)}>
             <Menu className="h-5 w-5 text-muted-foreground" />
           </button>
-          <h1 className="text-sm font-medium text-foreground truncate">
-            {[...visibleNavItems].find((n) => location.pathname.startsWith(n.url))?.title || "Genesis Quant"}
-          </h1>
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+            <h1 className="truncate text-sm font-medium text-foreground">
+              {[...visibleNavItems].find((n) => location.pathname.startsWith(n.url))?.title || "Genesis Quant"}
+            </h1>
+            <div className="flex shrink-0 items-center gap-2 rounded-md border border-border bg-card px-2.5 py-1.5" title={user?.email || "Usuário"}>
+              <UserCircle className="h-4 w-4 text-primary" />
+              <div className="hidden text-right sm:block">
+                <div className="max-w-[220px] truncate text-xs font-medium text-foreground">{user?.email}</div>
+                <div className="text-[10px] text-muted-foreground">{user?.role === "admin" ? "Administrador" : "Visualizador"}</div>
+              </div>
+            </div>
+          </div>
         </header>
 
         <main className="flex-1 p-4 lg:p-6">{children}</main>
