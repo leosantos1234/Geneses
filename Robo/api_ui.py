@@ -198,7 +198,11 @@ def control_center(
 
 @app.get("/api/ui/runtime-options")
 def runtime_options(_user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
-    return worker_manager.options()
+    options = worker_manager.options()
+    if os.getenv("GENESIS_REMOTE_WORKER_CONTROL", "").strip().lower() in {"1", "true", "yes", "on"}:
+        repository.ensure_ui_worker_states_table()
+        options["workers"] = repository.list_ui_worker_states()
+    return options
 
 
 @app.get("/api/ui/workers")
@@ -211,6 +215,12 @@ def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depen
     if not payload.assets:
         raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
     try:
+        if os.getenv("GENESIS_REMOTE_WORKER_CONTROL", "").strip().lower() in {"1", "true", "yes", "on"}:
+            allowed = {item["id"] for item in worker_manager.available_assets()}
+            invalid = [asset for asset in payload.assets if asset.upper() not in allowed]
+            if invalid:
+                raise ValueError(f"Ativo(s) indisponível(is): {', '.join(invalid)}")
+            return {"workers": repository.set_ui_worker_states([asset.upper() for asset in payload.assets], running=True, strategy=payload.strategy)}
         return {"workers": worker_manager.start(payload.assets, payload.strategy)}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -221,6 +231,8 @@ def stop_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depend
     if not payload.assets:
         raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
     try:
+        if os.getenv("GENESIS_REMOTE_WORKER_CONTROL", "").strip().lower() in {"1", "true", "yes", "on"}:
+            return {"workers": repository.set_ui_worker_states([asset.upper() for asset in payload.assets], running=False)}
         return {"workers": worker_manager.stop(payload.assets)}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -21,6 +21,10 @@ services:
         sync: false
       - key: UI_CORS_ORIGINS
         value: https://genesis-panel.onrender.com
+      - key: GENESIS_REMOTE_WORKER_CONTROL
+        value: "true"
+      - key: GENESIS_ASSET_LIST
+        value: BTC,ETH,BNB,SOL,XRP
 
   - type: web
     name: genesis-panel
@@ -38,7 +42,7 @@ services:
     plan: starter
     dockerfilePath: ./Robo/Dockerfile.worker
     dockerContext: ./Robo
-    dockerCommand: python trading_bot_geneses.py
+    dockerCommand: python render_worker.py
     envVars:
       - key: GENESIS_DATABASE_BACKEND
         value: postgres
@@ -64,6 +68,10 @@ services:
         value: "false"
       - key: ALLOW_EXCHANGE_WRITE
         value: "false"
+      - key: GENESIS_REMOTE_WORKER_CONTROL
+        value: "true"
+      - key: GENESIS_ASSET_LIST
+        value: BTC,ETH,BNB,SOL,XRP
 
 databases:
   - name: genesis-db

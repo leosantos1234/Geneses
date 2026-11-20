@@ -143,6 +143,50 @@ def list_ui_users() -> list[dict[str, Any]]:
         conn.close()
 
 
+def ensure_ui_worker_states_table() -> None:
+    conn = _get_conn()
+    try:
+        _execute(conn, """
+            CREATE TABLE IF NOT EXISTS ui_worker_states (
+                asset TEXT PRIMARY KEY,
+                strategy TEXT NOT NULL DEFAULT 'SWING_TREND_FOLLOWING',
+                running BOOLEAN NOT NULL DEFAULT FALSE,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def set_ui_worker_states(assets: list[str], *, running: bool, strategy: str | None = None) -> list[dict[str, Any]]:
+    ensure_ui_worker_states_table()
+    conn = _get_conn()
+    try:
+        for asset in assets:
+            if strategy:
+                _execute(conn, """INSERT INTO ui_worker_states (asset, strategy, running)
+                    VALUES (?, ?, ?) ON CONFLICT (asset) DO UPDATE SET strategy = EXCLUDED.strategy,
+                    running = EXCLUDED.running, updated_at = CURRENT_TIMESTAMP""", [asset, strategy, running])
+            else:
+                _execute(conn, """INSERT INTO ui_worker_states (asset, strategy, running)
+                    VALUES (?, 'SWING_TREND_FOLLOWING', ?) ON CONFLICT (asset) DO UPDATE SET
+                    running = EXCLUDED.running, updated_at = CURRENT_TIMESTAMP""", [asset, running])
+        conn.commit()
+        return list_ui_worker_states()
+    finally:
+        conn.close()
+
+
+def list_ui_worker_states() -> list[dict[str, Any]]:
+    conn = _get_conn(read_only=True)
+    try:
+        rows = _execute(conn, "SELECT asset, strategy, running, updated_at FROM ui_worker_states ORDER BY asset ASC").fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+
 _OPEN_TRADE_SQL = "LOWER(TRIM(COALESCE(status, ''))) IN ('aberto', 'open', 'pending', 'partially_filled') AND COALESCE(quantity, 0) > 0"
 
 

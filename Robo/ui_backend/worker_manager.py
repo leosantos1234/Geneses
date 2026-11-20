@@ -113,6 +113,9 @@ def _discover_worker_pids(asset: str, env_file: str) -> list[int]:
     return sorted(set(found))
 
 def available_assets() -> list[dict[str, str]]:
+    configured = [item.strip().upper() for item in os.getenv("GENESIS_ASSET_LIST", "").split(",") if item.strip()]
+    if configured:
+        return [{"id": asset, "label": asset, "env_file": ASSET_ENV_FILES.get(asset, "")} for asset in configured if asset in ASSET_ENV_FILES]
     return [{"id": asset, "label": asset, "env_file": relative} for asset, relative in ASSET_ENV_FILES.items() if (ROBO_ROOT / relative).is_file()]
 
 def status() -> list[dict[str, Any]]:
