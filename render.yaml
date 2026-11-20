@@ -53,7 +53,7 @@ services:
       - key: ACTIVE_EXCHANGE
         value: okx
       - key: OKX_READ_ONLY
-        value: "true"
+        value: "false"
       - key: OKX_DEMO_TRADING
         value: "false"
       - key: OKX_API_KEY
@@ -65,11 +65,17 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: PAPER_MODE
-        value: "true"
+        value: "false"
       - key: ENABLE_LIVE_TRADING
-        value: "false"
+        value: "true"
       - key: ALLOW_EXCHANGE_WRITE
-        value: "false"
+        value: "true"
+      - key: ALLOW_MAINNET_TRADING
+        value: "true"
+      - key: ALLOW_MAINNET_FROM_ENVFILE
+        value: "true"
+      - key: GENESIS_LIVE_EXECUTION_AUTHORIZATION
+        value: I_UNDERSTAND_REAL_TRADING
       - key: GENESIS_REMOTE_WORKER_CONTROL
         value: "true"
       - key: GENESIS_ASSET_LIST
