@@ -424,8 +424,94 @@ def atualizar_trade_sqlite(
 
 
 
+def _ensure_postgres_operational_schema():
+    """Create the additive operational schema required by worker startup."""
+    conn = _connect_database()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS trades (
+                id BIGSERIAL PRIMARY KEY, trade_id TEXT UNIQUE, timestamp TEXT,
+                symbol TEXT, side TEXT, entry_price DOUBLE PRECISION,
+                exit_price DOUBLE PRECISION, profit_loss DOUBLE PRECISION,
+                strategy TEXT, decision_source TEXT, entry_score DOUBLE PRECISION,
+                sentiment_score DOUBLE PRECISION, stop_loss DOUBLE PRECISION,
+                take_profit DOUBLE PRECISION, trailing_stop DOUBLE PRECISION,
+                volatilidade_histÃ³rica DOUBLE PRECISION, liquidez_mercado DOUBLE PRECISION,
+                rsi_entrada DOUBLE PRECISION, macd_entrada DOUBLE PRECISION,
+                sma_entrada DOUBLE PRECISION, atr_entrada DOUBLE PRECISION,
+                volume_entrada DOUBLE PRECISION, sentimento_entrada DOUBLE PRECISION,
+                ajuste_manual_stop_loss DOUBLE PRECISION, ajuste_manual_take_profit DOUBLE PRECISION,
+                trailing_stop_inicial DOUBLE PRECISION, trailing_stop_final DOUBLE PRECISION,
+                backtest_result DOUBLE PRECISION, spread DOUBLE PRECISION,
+                profundidade_livro DOUBLE PRECISION, spread_pct DOUBLE PRECISION,
+                execution_latency_ms DOUBLE PRECISION, api_ping_ms DOUBLE PRECISION,
+                slippage_pct DOUBLE PRECISION, slippage_abs DOUBLE PRECISION,
+                estrategia_utilizada TEXT, risco_por_operacao DOUBLE PRECISION,
+                timestamp_decisao_ia TEXT, regime TEXT, tendencia TEXT, consenso TEXT,
+                consenso_score DOUBLE PRECISION, consenso_razao TEXT, decisao_lstm TEXT,
+                open_ts TEXT, close_ts TEXT, status TEXT, model_version TEXT,
+                order_id TEXT, exec_id TEXT, quantity DOUBLE PRECISION,
+                exec_value DOUBLE PRECISION, exec_fee DOUBLE PRECISION,
+                import_source TEXT, decision_id UUID
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS predictions_lstm (
+                id BIGSERIAL PRIMARY KEY, trade_id TEXT, symbol TEXT, model_name TEXT,
+                timestamp TEXT, predicted_price DOUBLE PRECISION, real_price DOUBLE PRECISION,
+                direction_predicted TEXT, direction_real TEXT, error_percent DOUBLE PRECISION,
+                confidence_score DOUBLE PRECISION, window_size INTEGER, sequence_input TEXT
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS log_events (
+                id BIGSERIAL PRIMARY KEY, ts TEXT, level TEXT, logger TEXT,
+                strategy TEXT, symbol TEXT, message TEXT
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS decision_trace (
+                decision_id UUID PRIMARY KEY, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), symbol TEXT, timeframe TEXT,
+                strategy TEXT, environment TEXT, mode TEXT,
+                final_status TEXT NOT NULL DEFAULT 'IN_PROGRESS', trade_id TEXT,
+                order_id TEXT, position_id TEXT, schema_version TEXT NOT NULL DEFAULT '1.0',
+                decision_context JSONB NOT NULL DEFAULT '{}'::jsonb, config_fingerprint TEXT,
+                code_version TEXT, strategy_version TEXT, model_version TEXT, reason_code TEXT,
+                reason_message TEXT, legacy BOOLEAN NOT NULL DEFAULT FALSE,
+                lineage_quality TEXT NOT NULL DEFAULT 'complete'
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS decision_events (
+                event_id BIGSERIAL PRIMARY KEY,
+                decision_id UUID NOT NULL REFERENCES decision_trace(decision_id),
+                event_ts TIMESTAMPTZ NOT NULL DEFAULT NOW(), stage TEXT NOT NULL,
+                event_type TEXT NOT NULL, component TEXT NOT NULL, status TEXT NOT NULL,
+                reason_code TEXT, duration_ms DOUBLE PRECISION,
+                payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+                schema_version TEXT NOT NULL DEFAULT '1.0'
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS mr_fsm_state (
+                symbol TEXT PRIMARY KEY, updated_at TEXT NOT NULL, state_json TEXT NOT NULL
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS trades_decision_id_idx ON trades(decision_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_symbol_created_idx ON decision_trace(symbol, created_at DESC)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_trade_idx ON decision_trace(trade_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS decision_events_decision_ts_idx ON decision_events(decision_id, event_ts, event_id)")
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def inicializar_banco():
     if _using_postgres():
+        _ensure_postgres_operational_schema()
+        return
         conn = _connect_database()
         try:
             cursor = conn.cursor()
