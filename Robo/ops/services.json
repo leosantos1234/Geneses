@@ -1,0 +1,57 @@
+{
+  "services": [
+    {
+      "name": "trading_bot_btc",
+      "enabled": false,
+      "process_match": [
+        "python",
+        "trading_bot_geneses.py",
+        ".env-btc"
+      ],
+      "restart_cmd": "start \"BOT BTC\" cmd /k \"cd /d C:\\Users\\NPO\\Desenvolvimento\\genesis\\Robo && python trading_bot_geneses.py .env-btc\"",
+      "restart_cooldown_sec": 180
+    },
+    {
+      "name": "lstm_btc",
+      "enabled": false,
+      "port": 8505,
+      "health_url": "http://127.0.0.1:8505/predict",
+      "process_match": [
+        "python",
+        "estrategias/lstm_service.py",
+        ".env-btc"
+      ],
+      "restart_cmd": "start \"LSTM BTC\" cmd /k \"cd /d C:\\Users\\NPO\\Desenvolvimento\\genesis\\Robo\\estrategias && python lstm_service.py ..\\.env-btc\"",
+      "restart_cooldown_sec": 180
+    },
+    {
+      "name": "lstm_eth",
+      "enabled": false,
+      "port": 8506,
+      "health_url": "http://127.0.0.1:8506/predict",
+      "process_match": [
+        "python",
+        "estrategias/lstm_service.py",
+        ".env-eth"
+      ],
+      "restart_cmd": "start \"LSTM ETH\" cmd /k \"cd /d C:\\Users\\NPO\\Desenvolvimento\\genesis\\Robo\\estrategias && python lstm_service.py ..\\.env-eth\"",
+      "restart_cooldown_sec": 180
+    },
+    {
+      "name": "ui_api",
+      "enabled": false,
+      "port": 8010,
+      "process_match": [
+        "uvicorn",
+        "api_ui:app"
+      ],
+      "restart_cmd": "start \"UI API\" cmd /k \"cd /d C:\\Users\\NPO\\Desenvolvimento\\genesis\\Robo && start_ui_api.bat\"",
+      "restart_cooldown_sec": 180
+    }
+  ],
+  "global": {
+    "max_memory_pct": 92.0,
+    "max_memory_mb": 0.0,
+    "default_timeout_sec": 2.5
+  }
+}

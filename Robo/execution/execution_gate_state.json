@@ -1,0 +1,1328 @@
+{
+  "breakout:ETHUSDT:buy:2026-04-06T02:15:12.660951": {
+    "symbol": "ETHUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-06T02:15:14.560160",
+    "order_id": "140d83e1-e641-4a3d-ac40-bd904450a1de"
+  },
+  "breakout:SOLUSDT:buy:2026-04-06T02:20:17.025559": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-06T02:20:18.197628",
+    "order_id": "9712d40d-5e10-4ca0-9133-5b2a883e0b2f"
+  },
+  "breakout:BTCUSDT:buy:2026-04-06T05:15:16.010471": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-06T05:15:17.155153",
+    "order_id": "457732e3-a1a3-4d7b-aa75-c9e98a22629e"
+  },
+  "breakout:BTCUSDT:buy:2026-04-06T08:30:12.777189": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-06T08:30:15.319447",
+    "order_id": "a7c0e637-cd51-4b8b-9882-3dd13f3df548"
+  },
+  "breakout:SOLUSDT:buy:2026-04-08T08:25:14.128495": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T08:25:15.993661",
+    "order_id": "a4bb22f6-8070-4962-a9c5-acfed10936e5"
+  },
+  "breakout:BTCUSDT:buy:2026-04-08T09:05:14.792565": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T09:05:15.948608",
+    "order_id": "3c34edfe-bdce-4907-bd78-aa4f9bf5008e"
+  },
+  "breakout:BTCUSDT:buy:2026-04-08T11:15:11.876664": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T11:15:12.994693",
+    "order_id": "a5c263dc-5033-443f-a3bb-0e2c7de7ca76"
+  },
+  "breakout:ETHUSDT:buy:2026-04-08T12:45:17.780013": {
+    "symbol": "ETHUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T12:45:18.956246",
+    "order_id": "1b4be61b-0d95-4824-b507-4c7d294653d3"
+  },
+  "breakout:ETHUSDT:buy:2026-04-08T16:20:17.802235": {
+    "symbol": "ETHUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T16:20:19.608396",
+    "order_id": "8152d396-bcc4-4c12-a3d0-f32b8b4f9b6f"
+  },
+  "breakout:BTCUSDT:buy:2026-04-08T16:25:11.759420": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T16:25:12.869619",
+    "order_id": "c81421cb-5775-4784-b173-54dd7b9b1ad5"
+  },
+  "breakout:BTCUSDT:buy:2026-04-08T16:45:36.230123": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T16:45:37.359606",
+    "order_id": "9d6a63df-e57f-4dae-a3f4-e2818ce021fa"
+  },
+  "breakout:BTCUSDT:buy:2026-04-08T17:20:15.563878": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T17:20:18.039965",
+    "order_id": "3c7e94f1-b0f5-4e17-839f-8706d2ae44ba"
+  },
+  "breakout:ETHUSDT:buy:2026-04-08T17:40:19.100763": {
+    "symbol": "ETHUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-08T17:40:20.237908",
+    "order_id": "f3300262-7154-41ac-873c-1740cddae836"
+  },
+  "breakout:BTCUSDT:buy:2026-04-09T05:30:10.583517": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-09T05:30:11.706778",
+    "order_id": "b428642d-3ce2-4690-990e-770570374d90"
+  },
+  "breakout:BTCUSDT:sell:2026-04-09T06:25:12.503950": {
+    "symbol": "BTCUSDT",
+    "side": "SELL",
+    "executed_at": "2026-04-09T06:25:14.316776",
+    "order_id": "b726d5aa-3c5a-4fc3-9e7c-95126030c20e"
+  },
+  "breakout:BTCUSDT:buy:2026-04-09T14:55:11.993824": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-09T14:55:13.206816",
+    "order_id": "c5cfb889-5004-4f34-bb9a-2db6f891e03c"
+  },
+  "breakout:BTCUSDT:buy:2026-04-09T21:05:16.643213": {
+    "symbol": "BTCUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-09T21:05:17.783035",
+    "order_id": "a185c774-534e-44be-9b70-e15b31a6e53b"
+  },
+  "breakout:ETHUSDT:buy:2026-04-10T04:20:12.695025": {
+    "symbol": "ETHUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-10T04:20:13.835079",
+    "order_id": "551bb154-ef34-491d-ba16-dd195151d0da"
+  },
+  "breakout:SOLUSDT:buy:2026-04-10T04:30:09.550309": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-04-10T04:30:10.818382",
+    "order_id": "9b3cbf82-7e12-4590-bf68-86246c999739"
+  },
+  "mm_lat:XRPUSDT:buy:1791125287": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:48:10.064718",
+    "order_id": "3980323700371083264"
+  },
+  "mm_lat:BNBUSDT:buy:1791125288": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:48:10.702440",
+    "order_id": "3980323722282127360"
+  },
+  "mm_lat:SOLUSDT:buy:1791125288": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:48:10.783047",
+    "order_id": "3980323724664492032"
+  },
+  "mm_lat:XRPUSDT:sell:1791125290": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:48:10.877051",
+    "order_id": "3980323727751499776"
+  },
+  "mm_lat:BNBUSDT:sell:1791125290": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:48:11.457716",
+    "order_id": "3980323747515060224"
+  },
+  "mm_lat:SOLUSDT:sell:1791125290": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:48:11.537117",
+    "order_id": "3980323749998088192"
+  },
+  "mm_lat:XRPUSDT:buy:1791125482": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:51:24.265894",
+    "order_id": "3980330214863392768"
+  },
+  "mm_lat:XRPUSDT:sell:1791125484": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:51:25.078927",
+    "order_id": "3980330243082670080"
+  },
+  "mm_lat:SOLUSDT:buy:1791125485": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:51:26.753656",
+    "order_id": "3980330300628520960"
+  },
+  "mm_lat:SOLUSDT:sell:1791125486": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:51:27.470421",
+    "order_id": "3980330324452167680"
+  },
+  "mm_lat:BNBUSDT:buy:1791125485": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:51:27.749194",
+    "order_id": "3980330333813854210"
+  },
+  "mm_lat:BNBUSDT:sell:1791125487": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:51:28.504360",
+    "order_id": "3980330359382331392"
+  },
+  "mm_lat:XRPUSDT:buy:1791125715": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:55:17.276419",
+    "order_id": "3980338035260641280"
+  },
+  "mm_lat:XRPUSDT:sell:1791125717": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:55:18.141017",
+    "order_id": "3980338064889204736"
+  },
+  "mm_lat:SOLUSDT:buy:1791125719": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:55:21.216005",
+    "order_id": "3980338167901310976"
+  },
+  "mm_lat:SOLUSDT:sell:1791125721": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:55:21.955581",
+    "order_id": "3980338192664481792"
+  },
+  "mm_lat:BNBUSDT:buy:1791125720": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T14:55:22.266543",
+    "order_id": "3980338203133464579"
+  },
+  "mm_lat:BNBUSDT:sell:1791125722": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T14:55:23.252592",
+    "order_id": "3980338228970377216"
+  },
+  "mm_lat:BNBUSDT:buy:1791126315": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T15:05:16.742098",
+    "order_id": "3980358150572199938"
+  },
+  "mm_lat:BNBUSDT:sell:1791126316": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T15:05:17.498936",
+    "order_id": "3980358175972904960"
+  },
+  "mm_lat:SOLUSDT:buy:1791126318": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T15:05:20.633915",
+    "order_id": "3980358281434484738"
+  },
+  "mm_lat:SOLUSDT:sell:1791126320": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T15:05:21.402108",
+    "order_id": "3980358307137179648"
+  },
+  "mm_lat:XRPUSDT:buy:1791132540": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T16:49:03.238390",
+    "order_id": "3980567078853660672"
+  },
+  "mm_lat:XRPUSDT:sell:1791132543": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T16:49:03.988157",
+    "order_id": "3980567104153702400"
+  },
+  "mm_lat:SOLUSDT:buy:1791132544": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T16:49:06.462089",
+    "order_id": "3980567186664050688"
+  },
+  "mm_lat:SOLUSDT:sell:1791132546": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T16:49:07.293642",
+    "order_id": "3980567214346457088"
+  },
+  "mm_lat:XRPUSDT:buy:1791132915": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T16:55:17.705332",
+    "order_id": "3980579644216692736"
+  },
+  "mm_lat:XRPUSDT:sell:1791132917": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T16:55:18.473338",
+    "order_id": "3980579669650952193"
+  },
+  "mm_lat:XRPUSDT:buy:1791133510": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:05:11.958586",
+    "order_id": "3980599584239898624"
+  },
+  "mm_lat:XRPUSDT:sell:1791133511": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:05:12.665683",
+    "order_id": "3980599607660892160"
+  },
+  "mm_lat:SOLUSDT:buy:1791133810": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:10:12.431012",
+    "order_id": "3980609666340081664"
+  },
+  "mm_lat:SOLUSDT:sell:1791133812": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:10:13.165480",
+    "order_id": "3980609690398609408"
+  },
+  "mm_lat:XRPUSDT:buy:1791133813": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:10:14.931566",
+    "order_id": "3980609749722845184"
+  },
+  "mm_lat:XRPUSDT:sell:1791133814": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:10:15.663850",
+    "order_id": "3980609774553124864"
+  },
+  "mm_lat:XRPUSDT:buy:1791134118": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:15:19.968079",
+    "order_id": "3980619985066119168"
+  },
+  "mm_lat:XRPUSDT:sell:1791134119": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:15:20.698994",
+    "order_id": "3980620010366160896"
+  },
+  "mm_lat:XRPUSDT:buy:1791134543": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:22:25.755873",
+    "order_id": "3980634273046581248"
+  },
+  "mm_lat:XRPUSDT:sell:1791134545": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:22:26.476540",
+    "order_id": "3980634296501129216"
+  },
+  "mm_lat:XRPUSDT:buy:1791134740": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:25:41.700024",
+    "order_id": "3980640847869759488"
+  },
+  "mm_lat:XRPUSDT:sell:1791134741": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:25:42.666751",
+    "order_id": "3980640880316895232"
+  },
+  "mm_lat:XRPUSDT:buy:1791135014": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:30:15.879532",
+    "order_id": "3980650047958142979"
+  },
+  "mm_lat:XRPUSDT:sell:1791135015": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:30:16.597181",
+    "order_id": "3980650071882452992"
+  },
+  "mm_lat:XRPUSDT:buy:1791135345": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:35:47.366608",
+    "order_id": "3980661170346381312"
+  },
+  "mm_lat:XRPUSDT:sell:1791135347": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:35:48.086619",
+    "order_id": "3980661194673344512"
+  },
+  "mm_lat:SOLUSDT:buy:1791135817": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:43:39.302402",
+    "order_id": "3980677006595444736"
+  },
+  "mm_lat:SOLUSDT:sell:1791135819": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:43:40.029710",
+    "order_id": "3980677030955962368"
+  },
+  "mm_lat:SOLUSDT:buy:1791136215": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:50:16.924168",
+    "order_id": "3980690348609359872"
+  },
+  "mm_lat:SOLUSDT:sell:1791136216": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:50:17.671964",
+    "order_id": "3980690373708075008"
+  },
+  "mm_lat:SOLUSDT:buy:1791136517": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:55:19.089416",
+    "order_id": "3980700487483641856"
+  },
+  "mm_lat:XRPUSDT:buy:1791136517": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T17:55:19.638355",
+    "order_id": "3980700506039242752"
+  },
+  "mm_lat:SOLUSDT:sell:1791136519": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:55:19.815339",
+    "order_id": "3980700512179703808"
+  },
+  "mm_lat:XRPUSDT:sell:1791136519": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T17:55:20.397953",
+    "order_id": "3980700531104403456"
+  },
+  "mm_lat:XRPUSDT:buy:1791137110": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:05:11.496773",
+    "order_id": "3980720365464702976"
+  },
+  "mm_lat:XRPUSDT:sell:1791137111": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:05:12.216825",
+    "order_id": "3980720389758111744"
+  },
+  "mm_lat:SOLUSDT:buy:1791137111": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:05:13.235581",
+    "order_id": "3980720424319176704"
+  },
+  "mm_lat:SOLUSDT:sell:1791137113": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:05:13.997938",
+    "order_id": "3980720449820545024"
+  },
+  "mm_lat:SOLUSDT:buy:1791137415": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:10:17.120821",
+    "order_id": "3980730620571537408"
+  },
+  "mm_lat:SOLUSDT:sell:1791137417": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:10:17.845072",
+    "order_id": "3980730645267599360"
+  },
+  "mm_lat:XRPUSDT:buy:1791137716": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:15:18.238598",
+    "order_id": "3980740724582764544"
+  },
+  "mm_lat:XRPUSDT:sell:1791137718": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:15:18.978491",
+    "order_id": "3980740749312380928"
+  },
+  "mm_lat:SOLUSDT:buy:1791137719": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:15:20.632249",
+    "order_id": "3980740805247619072"
+  },
+  "mm_lat:SOLUSDT:sell:1791137720": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:15:21.382921",
+    "order_id": "3980740830547660800"
+  },
+  "mm_lat:SOLUSDT:buy:1791138012": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:20:13.825548",
+    "order_id": "3980750643574853632"
+  },
+  "mm_lat:SOLUSDT:sell:1791138013": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:20:14.783801",
+    "order_id": "3980750675753553920"
+  },
+  "mm_lat:XRPUSDT:buy:1791138312": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-04T18:25:14.351280",
+    "order_id": "3980760727151431681"
+  },
+  "mm_lat:XRPUSDT:sell:1791138314": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-04T18:25:15.138602",
+    "order_id": "3980760753659432960"
+  },
+  "mm_lat:XRPUSDT:buy:1791160503": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T00:35:05.096846",
+    "order_id": "3981505390124716032"
+  },
+  "mm_lat:BNBUSDT:buy:1791160503": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T00:35:05.460723",
+    "order_id": "3981505402439192576"
+  },
+  "mm_lat:XRPUSDT:sell:1791160505": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T00:35:05.854823",
+    "order_id": "3981505415894519808"
+  },
+  "mm_lat:BNBUSDT:sell:1791160505": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T00:35:06.223072",
+    "order_id": "3981505428242550784"
+  },
+  "mm_lat:BNBUSDT:buy:1791160939": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T00:42:20.552932",
+    "order_id": "3981520001972555776"
+  },
+  "mm_lat:BNBUSDT:sell:1791160940": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T00:42:21.293203",
+    "order_id": "3981520026601508864"
+  },
+  "mm_lat:SOLUSDT:buy:1791165316": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T01:55:18.212429",
+    "order_id": "3981666892404215808"
+  },
+  "mm_lat:SOLUSDT:sell:1791165318": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T01:55:18.975898",
+    "order_id": "3981666918744444928"
+  },
+  "mm_lat:SOLUSDT:buy:1791168610": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T02:50:12.270259",
+    "order_id": "3981777424629092352"
+  },
+  "mm_lat:SOLUSDT:sell:1791168612": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T02:50:13.070111",
+    "order_id": "3981777450633777152"
+  },
+  "mm_lat:SOLUSDT:buy:1791169509": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T03:05:10.747858",
+    "order_id": "3981807572581601280"
+  },
+  "mm_lat:SOLUSDT:sell:1791169510": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T03:05:11.456794",
+    "order_id": "3981807596640129024"
+  },
+  "mm_lat:XRPUSDT:buy:1791170409": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T03:20:11.277328",
+    "order_id": "3981837789522022400"
+  },
+  "mm_lat:XRPUSDT:sell:1791170411": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T03:20:11.987500",
+    "order_id": "3981837814016757760"
+  },
+  "mm_lat:SOLUSDT:buy:1791171311": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T03:35:12.691422",
+    "order_id": "3981868036292333568"
+  },
+  "mm_lat:SOLUSDT:sell:1791171312": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T03:35:13.430039",
+    "order_id": "3981868060753514496"
+  },
+  "mm_lat:BNBUSDT:buy:1791242418": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T23:20:20.471777",
+    "order_id": "3984253988033777664"
+  },
+  "mm_lat:BNBUSDT:sell:1791242420": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T23:20:21.171797",
+    "order_id": "3984254011085672448"
+  },
+  "mm_lat:BNBUSDT:buy:1791242713": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T23:25:14.707867",
+    "order_id": "3984263861190512640"
+  },
+  "mm_lat:BNBUSDT:sell:1791242714": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T23:25:15.420678",
+    "order_id": "3984263884678615040"
+  },
+  "mm_lat:XRPUSDT:buy:1791244241": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T23:50:43.170558",
+    "order_id": "3984315147394994176"
+  },
+  "mm_lat:XRPUSDT:sell:1791244243": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T23:50:43.889350",
+    "order_id": "3984315172627927040"
+  },
+  "mm_lat:XRPUSDT:buy:1791244516": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-05T23:55:18.615124",
+    "order_id": "3984324390600822784"
+  },
+  "mm_lat:XRPUSDT:sell:1791244518": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-05T23:55:19.396289",
+    "order_id": "3984324416706170880"
+  },
+  "mm_lat:XRPUSDT:buy:1791245118": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T00:05:19.952430",
+    "order_id": "3984344568357179392"
+  },
+  "mm_lat:XRPUSDT:sell:1791245119": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T00:05:20.768038",
+    "order_id": "3984344595435606016"
+  },
+  "mm_lat:SOLUSDT:buy:1791246614": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T00:30:16.467706",
+    "order_id": "3984394783806181376"
+  },
+  "mm_lat:SOLUSDT:sell:1791246616": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T00:30:17.284260",
+    "order_id": "3984394810549063680"
+  },
+  "mm_lat:XRPUSDT:buy:1791247815": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T00:50:17.276845",
+    "order_id": "3984435076538552320"
+  },
+  "mm_lat:XRPUSDT:sell:1791247817": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T00:50:18.020430",
+    "order_id": "3984435101838594050"
+  },
+  "mm_lat:SOLUSDT:buy:1791252451": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T02:07:33.431945",
+    "order_id": "3984590640556003328"
+  },
+  "mm_lat:SOLUSDT:sell:1791252453": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T02:07:34.240864",
+    "order_id": "3984590668708171776"
+  },
+  "mm_lat:BNBUSDT:buy:1791256816": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T03:20:17.858876",
+    "order_id": "3984737088371150848"
+  },
+  "mm_lat:BNBUSDT:sell:1791256817": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T03:20:18.577709",
+    "order_id": "3984737112463233024"
+  },
+  "mm_lat:BNBUSDT:buy:1791257111": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T03:25:12.699414",
+    "order_id": "3984746982667177984"
+  },
+  "mm_lat:BNBUSDT:sell:1791257112": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T03:25:13.486253",
+    "order_id": "3984747008436981760"
+  },
+  "mm_lat:SOLUSDT:buy:1791261015": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T04:30:17.496222",
+    "order_id": "3984878007086993412"
+  },
+  "mm_lat:SOLUSDT:sell:1791261017": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T04:30:18.219702",
+    "order_id": "3984878031313293312"
+  },
+  "mm_lat:SOLUSDT:buy:1791261309": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T04:35:11.058284",
+    "order_id": "3984887857326051328"
+  },
+  "mm_lat:SOLUSDT:sell:1791261311": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T04:35:11.783021",
+    "order_id": "3984887881921449984"
+  },
+  "mm_lat:SOLUSDT:buy:1791262597": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T04:56:39.245232",
+    "order_id": "3984931082313125888"
+  },
+  "mm_lat:SOLUSDT:sell:1791262599": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T04:56:39.954094",
+    "order_id": "3984931106136772608"
+  },
+  "mm_lat:SOLUSDT:buy:1791263111": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T05:05:13.146336",
+    "order_id": "3984948326137057280"
+  },
+  "mm_lat:SOLUSDT:sell:1791263113": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T05:05:13.861665",
+    "order_id": "3984948350061367296"
+  },
+  "mm_lat:SOLUSDT:buy:1791265513": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T05:45:15.076490",
+    "order_id": "3985028922473435136"
+  },
+  "mm_lat:SOLUSDT:sell:1791265515": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T05:45:15.832186",
+    "order_id": "3985028947572150272"
+  },
+  "mm_lat:BNBUSDT:buy:1791267008": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:10:09.567270",
+    "order_id": "3985079069303623680"
+  },
+  "mm_lat:BNBUSDT:sell:1791267009": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:10:10.277454",
+    "order_id": "3985079093597032448"
+  },
+  "mm_lat:BNBUSDT:buy:1791267608": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:20:10.291524",
+    "order_id": "3985099226558222336"
+  },
+  "mm_lat:XRPUSDT:buy:1791267608": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:20:10.612255",
+    "order_id": "3985099237664739328"
+  },
+  "mm_lat:BNBUSDT:sell:1791267610": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:20:11.020630",
+    "order_id": "3985099251019403264"
+  },
+  "mm_lat:XRPUSDT:sell:1791267610": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:20:11.328408",
+    "order_id": "3985099261521940480"
+  },
+  "mm_lat:XRPUSDT:buy:1791267913": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:25:14.840522",
+    "order_id": "3985109445996695556"
+  },
+  "mm_lat:XRPUSDT:sell:1791267914": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:25:15.574669",
+    "order_id": "3985109470424322048"
+  },
+  "mm_lat:XRPUSDT:buy:1791268213": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:30:15.255036",
+    "order_id": "3985119526251384832"
+  },
+  "mm_lat:XRPUSDT:sell:1791268215": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:30:15.988146",
+    "order_id": "3985119550242803712"
+  },
+  "mm_lat:SOLUSDT:buy:1791269425": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T06:50:27.392106",
+    "order_id": "3985160198920589312"
+  },
+  "mm_lat:SOLUSDT:sell:1791269427": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T06:50:28.106410",
+    "order_id": "3985160223348215808"
+  },
+  "mm_lat:XRPUSDT:buy:1791273915": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T08:05:17.162531",
+    "order_id": "3985310791681167360"
+  },
+  "mm_lat:XRPUSDT:sell:1791273917": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T08:05:17.894706",
+    "order_id": "3985310816310120448"
+  },
+  "mm_lat:SOLUSDT:buy:1791288617": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T12:10:20.271754",
+    "order_id": "3985804177257254912"
+  },
+  "mm_lat:SOLUSDT:sell:1791288620": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T12:10:21.303160",
+    "order_id": "3985804208395767808"
+  },
+  "mm_lat:SOLUSDT:buy:1791288960": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T12:16:02.454437",
+    "order_id": "3985815659449667584"
+  },
+  "mm_lat:SOLUSDT:sell:1791288962": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T12:16:03.179602",
+    "order_id": "3985815684313501696"
+  },
+  "mm_lat:BNBUSDT:buy:1791289866": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T12:31:08.441790",
+    "order_id": "3985846059463069696"
+  },
+  "mm_lat:BNBUSDT:sell:1791289868": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T12:31:09.273669",
+    "order_id": "3985846087783010304"
+  },
+  "mm_lat:BNBUSDT:buy:1791290114": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T12:35:16.168998",
+    "order_id": "3985854370996539392"
+  },
+  "mm_lat:BNBUSDT:sell:1791290116": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T12:35:17.077376",
+    "order_id": "3985854403208794112"
+  },
+  "mm_lat:XRPUSDT:buy:1791290716": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T12:45:19.487454",
+    "order_id": "3985874614989344768"
+  },
+  "mm_lat:XRPUSDT:sell:1791290719": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T12:45:20.308703",
+    "order_id": "3985874644081037314"
+  },
+  "mm_lat:SOLUSDT:buy:1791291913": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T13:05:16.128136",
+    "order_id": "3985914768839921664"
+  },
+  "mm_lat:SOLUSDT:sell:1791291916": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T13:05:17.048395",
+    "order_id": "3985914797092753408"
+  },
+  "mm_lat:SOLUSDT:buy:1791292218": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T13:10:20.203589",
+    "order_id": "3985924972205821952"
+  },
+  "mm_lat:SOLUSDT:sell:1791292220": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T13:10:20.935679",
+    "order_id": "3985924997338091520"
+  },
+  "mm_lat:BNBUSDT:buy:1791306325": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T17:05:27.614678",
+    "order_id": "3986398341153935360"
+  },
+  "mm_lat:BNBUSDT:sell:1791306327": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T17:05:28.412050",
+    "order_id": "3986398369104777216"
+  },
+  "mm_lat:SOLUSDT:buy:1791316141": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T19:49:03.592965",
+    "order_id": "3986727715317207040"
+  },
+  "mm_lat:SOLUSDT:sell:1791316143": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T19:49:04.476829",
+    "order_id": "3986727744006246400"
+  },
+  "mm_lat:BNBUSDT:buy:1791316790": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T19:59:53.730590",
+    "order_id": "3986749530194300928"
+  },
+  "mm_lat:BNBUSDT:sell:1791316793": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T19:59:54.578357",
+    "order_id": "3986749558413578240"
+  },
+  "mm_lat:BNBUSDT:buy:1791317233": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-06T20:07:16.218452",
+    "order_id": "3986764369507635200"
+  },
+  "mm_lat:BNBUSDT:sell:1791317236": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-06T20:07:17.285726",
+    "order_id": "3986764410074943488"
+  },
+  "mm_lat:XRPUSDT:buy:1791337789": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T01:49:52.764883",
+    "order_id": "3987454162864427008"
+  },
+  "mm_lat:XRPUSDT:sell:1791337792": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T01:49:53.518671",
+    "order_id": "3987454187896033280"
+  },
+  "mm_lat:XRPUSDT:buy:1791338056": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T01:54:18.171308",
+    "order_id": "3987463068479115264"
+  },
+  "mm_lat:XRPUSDT:sell:1791338058": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T01:54:18.892900",
+    "order_id": "3987463092604751872"
+  },
+  "mm_lat:BNBUSDT:buy:1791349679": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T05:08:02.500214",
+    "order_id": "3987853056911855616"
+  },
+  "mm_lat:BNBUSDT:sell:1791349682": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T05:08:03.215645",
+    "order_id": "3987853080265740288"
+  },
+  "mm_lat:SOLUSDT:buy:1791351191": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T05:33:13.001249",
+    "order_id": "3987903741451816960"
+  },
+  "mm_lat:SOLUSDT:sell:1791351193": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T05:33:13.727955",
+    "order_id": "3987903765543899136"
+  },
+  "mm_lat:SOLUSDT:buy:1791352750": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T05:59:12.240284",
+    "order_id": "3987956061434793984"
+  },
+  "mm_lat:SOLUSDT:sell:1791352752": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T05:59:12.994196",
+    "order_id": "3987956086231519232"
+  },
+  "mm_lat:SOLUSDT:buy:1791354879": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T06:34:40.556815",
+    "order_id": "3988027475701518336"
+  },
+  "mm_lat:SOLUSDT:sell:1791354880": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T06:34:41.264339",
+    "order_id": "3988027500062035968"
+  },
+  "mm_lat:SOLUSDT:buy:1791356867": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T07:07:49.652887",
+    "order_id": "3988094219661070336"
+  },
+  "mm_lat:SOLUSDT:sell:1791356869": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T07:07:50.381242",
+    "order_id": "3988094244122251264"
+  },
+  "mm_lat:SOLUSDT:buy:1791357107": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T07:11:48.804387",
+    "order_id": "3988102244773908480"
+  },
+  "mm_lat:SOLUSDT:sell:1791357108": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T07:11:49.536526",
+    "order_id": "3988102268933099520"
+  },
+  "mm_lat:BNBUSDT:buy:1791357201": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T07:13:24.474978",
+    "order_id": "3988105455027081216"
+  },
+  "mm_lat:BNBUSDT:sell:1791357204": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T07:13:25.187695",
+    "order_id": "3988105478817173504"
+  },
+  "mm_lat:SOLUSDT:buy:1791359449": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T07:50:50.612596",
+    "order_id": "3988180823482290176"
+  },
+  "mm_lat:SOLUSDT:sell:1791359450": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T07:50:51.615409",
+    "order_id": "3988180856936058880"
+  },
+  "mm_lat:XRPUSDT:buy:1791359871": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T07:57:53.307517",
+    "order_id": "3988195006873587712"
+  },
+  "mm_lat:XRPUSDT:sell:1791359873": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T07:57:54.023060",
+    "order_id": "3988195030831452160"
+  },
+  "mm_lat:SOLUSDT:buy:1791361228": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:20:30.502650",
+    "order_id": "3988240547552677888"
+  },
+  "mm_lat:SOLUSDT:sell:1791361230": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:20:31.511279",
+    "order_id": "3988240581006446592"
+  },
+  "mm_lat:XRPUSDT:buy:1791361622": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:27:05.047683",
+    "order_id": "3988253786319605760"
+  },
+  "mm_lat:XRPUSDT:sell:1791361625": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:27:05.778535",
+    "order_id": "3988253810747232256"
+  },
+  "mm_lat:XRPUSDT:buy:1791362149": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:35:51.493150",
+    "order_id": "3988271450849005568"
+  },
+  "mm_lat:XRPUSDT:sell:1791362151": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:35:52.199523",
+    "order_id": "3988271474504880128"
+  },
+  "mm_lat:XRPUSDT:buy:1791362440": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:40:43.138707",
+    "order_id": "3988281236797771776"
+  },
+  "mm_lat:XRPUSDT:sell:1791362443": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:40:43.868906",
+    "order_id": "3988281261359616000"
+  },
+  "mm_lat:SOLUSDT:buy:1791363274": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:54:35.699726",
+    "order_id": "3988309173513211904"
+  },
+  "mm_lat:SOLUSDT:sell:1791363275": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:54:36.446489",
+    "order_id": "3988309198142164992"
+  },
+  "mm_lat:SOLUSDT:buy:1791363301": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-07T08:55:03.086927",
+    "order_id": "3988310092434886656"
+  },
+  "mm_lat:SOLUSDT:sell:1791363303": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-07T08:55:03.812143",
+    "order_id": "3988310116795404288"
+  },
+  "mm_lat:BNBUSDT:buy:1791590417": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T00:00:20.238873",
+    "order_id": "3995930880575000576"
+  },
+  "mm_lat:BNBUSDT:sell:1791590420": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T00:00:22.789657",
+    "order_id": "3995930966575009792"
+  },
+  "mm_lat:BNBUSDT:buy:1791590737": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T00:05:39.605911",
+    "order_id": "3995941597457928192"
+  },
+  "mm_lat:BNBUSDT:sell:1791590739": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T00:05:40.949257",
+    "order_id": "3995941641951105026"
+  },
+  "mm_lat:XRPUSDT:buy:1791603353": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T03:35:55.923072",
+    "order_id": "3996364935170871296"
+  },
+  "mm_lat:XRPUSDT:sell:1791603355": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T03:35:57.363263",
+    "order_id": "3996364982784610304"
+  },
+  "mm_lat:XRPUSDT:buy:1791603541": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T03:39:03.495165",
+    "order_id": "3996371228606582784"
+  },
+  "mm_lat:XRPUSDT:sell:1791603543": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T03:39:04.858903",
+    "order_id": "3996371274576154624"
+  },
+  "mm_lat:SOLUSDT:buy:1791603711": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T03:41:53.746630",
+    "order_id": "3996376941651283968"
+  },
+  "mm_lat:SOLUSDT:sell:1791603713": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T03:41:55.034920",
+    "order_id": "3996376984366075906"
+  },
+  "mm_lat:XRPUSDT:buy:1791603721": {
+    "symbol": "XRPUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T03:42:03.442210",
+    "order_id": "3996377266693066752"
+  },
+  "mm_lat:XRPUSDT:sell:1791603723": {
+    "symbol": "XRPUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T03:42:04.713260",
+    "order_id": "3996377309072314368"
+  },
+  "mm_lat:SOLUSDT:buy:1791609504": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T05:18:26.482291",
+    "order_id": "3996571315496538112"
+  },
+  "mm_lat:SOLUSDT:sell:1791609506": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T05:18:27.997033",
+    "order_id": "3996571366063067136"
+  },
+  "mm_lat:BNBUSDT:buy:1791629129": {
+    "symbol": "BNBUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T10:45:31.785920",
+    "order_id": "3997229838102417408"
+  },
+  "mm_lat:BNBUSDT:sell:1791629131": {
+    "symbol": "BNBUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T10:45:33.280131",
+    "order_id": "3997229888232738816"
+  },
+  "mm_lat:SOLUSDT:buy:1791629269": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T10:47:52.237991",
+    "order_id": "3997234550486847488"
+  },
+  "mm_lat:SOLUSDT:sell:1791629272": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T10:47:53.518996",
+    "order_id": "3997234593805619202"
+  },
+  "mm_lat:SOLUSDT:buy:1791629330": {
+    "symbol": "SOLUSDT",
+    "side": "BUY",
+    "executed_at": "2026-10-10T10:48:52.129810",
+    "order_id": "3997236560330215424"
+  },
+  "mm_lat:SOLUSDT:sell:1791629332": {
+    "symbol": "SOLUSDT",
+    "side": "SELL",
+    "executed_at": "2026-10-10T10:48:53.500052",
+    "order_id": "3997236606366896128"
+  }
+}

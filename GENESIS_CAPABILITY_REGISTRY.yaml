@@ -1,0 +1,101 @@
+version: 1
+mcp_version: v1-read-only
+environment: local
+source_of_truth: PostgreSQL existente genesis_trading (local cluster PostgreSQL 16; schema public)
+decision_lineage:
+  status: internal-read-only-query-and-append-only-recording
+  source: PostgreSQL existente genesis_trading.public.decision_trace + decision_events
+  mcp_exposed: false
+  mcp_tools_added_sprint4: 0
+  historical_backfill: false
+  quantitative_behavior_changed: false
+exchange_write_default: false
+agent_api_trading_default: false
+capabilities:
+  system_health:
+    access: read
+    source: Robo/ops/healthcheck.py
+    mcp_allowed: true
+    mcp_exposed: true
+    read_only: true
+  trades:
+    access: read
+    source: PostgreSQL existente genesis_trading.public.trades
+    mcp_allowed: true
+    mcp_exposed: true
+    read_only: true
+  trade_detail:
+    access: read
+    source: Robo/api_ui.py
+    mcp_allowed: true
+    mcp_exposed: true
+    read_only: true
+  positions:
+    access: read
+    source: Robo/api_ui.py
+    mcp_allowed: true
+    mcp_exposed: true
+    read_only: true
+  risk:
+    access: read
+    source: PostgreSQL existente via Robo/utils/risk_guard.py
+    mcp_allowed: true
+    mcp_exposed: true
+    read_only: true
+  backtest:
+    access: isolated
+    source: Robo/Backtest
+    mcp_allowed: false
+    mcp_exposed: false
+  analysis:
+    access: analysis
+    source: Agente_IA/*
+    mcp_allowed: false
+  orders:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  create_order:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  cancel_order:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  close_position:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  modify_strategy:
+    access: write
+    source: configuration governance
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  modify_stop:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  modify_take_profit:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false
+  start_robot:
+    access: write
+    source: canonical worker only
+    mcp_allowed: false
+    mcp_exposed: false
+    read_only: false

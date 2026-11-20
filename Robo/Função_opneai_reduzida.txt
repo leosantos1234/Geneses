@@ -1,0 +1,94 @@
+# Função única para consultar a OpenAI
+def consultar_openai(prompt):
+    """
+    Consulta a OpenAI para analisar o mercado com base em um prompt.
+    """
+    try:
+        logging.info(f"Consultando OpenAI com prompt: {prompt}")
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Você é um analista financeiro experiente."},
+                {"role": "user", "content": prompt},
+            ]
+        )
+        if not response or 'choices' not in response:
+            logging.error("Erro: Resposta inválida da OpenAI.")
+            return None
+        recomendacao = response['choices'][0]['message']['content']
+        logging.info(f"Recomendação da OpenAI: {recomendacao}")
+        return recomendacao
+    except Exception as e:
+        logging.error(f"Erro ao consultar OpenAI: {e}")
+        return None
+
+# Função para avaliar o mercado com o modelo e OpenAI
+def avaliar_mercado_com_modelo(df, modelo):
+    """
+    Avalia o mercado usando indicadores técnicos, modelo preditivo e integração com a OpenAI.
+    :param df: DataFrame com dados do mercado.
+    :param modelo: Modelo treinado de machine learning.
+    :return: 'buy', 'sell' ou None.
+    """
+    try:
+        # Calcular indicadores técnicos
+        print("Calculando indicadores técnicos...")
+        df = calculate_indicators(df)
+
+        if df is None:
+            print("Erro: DataFrame retornado como None ao calcular indicadores.")
+            return None
+
+        # Verificar se as colunas necessárias estão presentes
+        colunas_necessarias = ['SMA_10', 'SMA_50', 'RSI', 'ATR']
+        colunas_ausentes = [col for col in colunas_necessarias if col not in df.columns]
+        if colunas_ausentes:
+            print(f"Erro: Indicadores ausentes no DataFrame: {colunas_ausentes}")
+            return None
+
+        print(f"Indicadores calculados: {df[colunas_necessarias].tail()}")  # Log dos indicadores
+
+        # Dados mais recentes para o modelo
+        ultimo_dado = pd.DataFrame([df.iloc[-1][['close', 'volume', 'SMA_10', 'SMA_50', 'RSI', 'ATR']]])
+        print(f"Dado mais recente para o modelo: {ultimo_dado}")  # Log do dado para predição
+
+        # Predição do modelo
+        predicao = modelo.predict(ultimo_dado)
+        acao_modelo = 'buy' if predicao == 1 else 'sell'
+        print(f"Ação prevista pelo modelo: {acao_modelo}")  # Log da previsão
+
+        # Gerar prompt para a OpenAI
+        prompt = f"""
+        Os dados do mercado são:
+        Fechamento: {df['close'].iloc[-1]}
+        Volume: {df['volume'].iloc[-1]}
+        RSI: {df['RSI'].iloc[-1]}
+        ATR: {df['ATR'].iloc[-1]}
+        SMA_10: {df['SMA_10'].iloc[-1]}
+        SMA_50: {df['SMA_50'].iloc[-1]}
+
+        Baseado nisso, qual seria sua recomendação? 'buy' ou 'sell'? Explique.
+        """
+        print("Prompt para OpenAI:", prompt)  # Log do prompt gerado
+
+        # Consultar a OpenAI
+        resposta_openai = consultar_openai(prompt)  # Substituído aqui
+        print("Resposta da OpenAI:", resposta_openai)  # Log da resposta da OpenAI
+
+        # Combinar a previsão do modelo com a resposta da OpenAI
+        if resposta_openai:
+            if "buy" in resposta_openai.lower():
+                print("Ação recomendada pela OpenAI: buy")  # Log da recomendação
+                return "buy"
+            elif "sell" in resposta_openai.lower():
+                print("Ação recomendada pela OpenAI: sell")  # Log da recomendação
+                return "sell"
+            else:
+                print("OpenAI não forneceu uma recomendação clara. Usando previsão do modelo.")
+                return acao_modelo
+        else:
+            print("Erro ou ausência de resposta da OpenAI. Usando previsão do modelo.")
+            return acao_modelo
+    except Exception as e:
+        print(f"Erro ao avaliar mercado: {e}")
+        return None

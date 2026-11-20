@@ -1,0 +1,64 @@
+{
+  "period_start_utc": "2026-09-16T18:00:00+00:00",
+  "period_end_utc": "2026-10-16T17:55:00+00:00",
+  "instrument": "BTC-USDT-SWAP",
+  "bar": "5m",
+  "candles": 8640,
+  "method": {
+    "breakout_lookback_bars": 20,
+    "horizon_bars": 12,
+    "sl_pct": 0.0045,
+    "tp_pct": 0.006,
+    "cost_pct": 0.0006,
+    "pullback_horizon_bars": 24,
+    "pullback_sl_atr": 1.0,
+    "pullback_tp_atr": 1.7
+  },
+  "policies": {
+    "breakout_puro": {
+      "trades": 328,
+      "wins": 114,
+      "losses": 214,
+      "win_rate_pct": 34.76,
+      "net_return_pct": -27.251,
+      "average_return_pct": -0.083,
+      "max_drawdown_pct": -27.425
+    },
+    "breakout_rsi": {
+      "trades": 30,
+      "wins": 11,
+      "losses": 19,
+      "win_rate_pct": 36.67,
+      "net_return_pct": -1.012,
+      "average_return_pct": -0.034,
+      "max_drawdown_pct": -3.299
+    },
+    "breakout_ema": {
+      "trades": 190,
+      "wins": 69,
+      "losses": 121,
+      "win_rate_pct": 36.32,
+      "net_return_pct": -12.588,
+      "average_return_pct": -0.066,
+      "max_drawdown_pct": -15.244
+    },
+    "breakout_rsi_ema": {
+      "trades": 17,
+      "wins": 7,
+      "losses": 10,
+      "win_rate_pct": 41.18,
+      "net_return_pct": -0.338,
+      "average_return_pct": -0.02,
+      "max_drawdown_pct": -1.977
+    },
+    "pullback_1h_ema_5m_rsi": {
+      "trades": 169,
+      "wins": 66,
+      "losses": 103,
+      "win_rate_pct": 39.05,
+      "net_return_pct": -10.919,
+      "average_return_pct": -0.065,
+      "max_drawdown_pct": -11.079
+    }
+  }
+}

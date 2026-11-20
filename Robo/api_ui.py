@@ -1,0 +1,203 @@
+from __future__ import annotations
+
+import os
+from datetime import datetime
+from typing import Any
+
+from fastapi import Depends, FastAPI, HTTPException, Query
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
+from dotenv import load_dotenv
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env.ui"), override=False)
+
+from ui_backend import repository
+from ui_backend.auth import authenticate, issue_token, require_auth
+from ui_backend import worker_manager
+from genesis_runtime import database_health
+
+
+app = FastAPI(
+    title="Genesis UI API",
+    description="API estável para o frontend (Lovable/UI).",
+    version="1.0.0",
+)
+
+cors_origins_raw = os.getenv(
+    "UI_CORS_ORIGINS",
+    "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:8080",
+)
+cors_origins = [o.strip() for o in cors_origins_raw.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class WorkerSelectionRequest(BaseModel):
+    assets: list[str]
+    strategy: str
+
+@app.post("/api/auth/login")
+def login(payload: LoginRequest) -> dict[str, Any]:
+    user = authenticate(payload.email, payload.password)
+    return {"user": user, "access_token": issue_token(user), "token_type": "bearer"}
+
+@app.get("/api/auth/me")
+def current_user(user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+    return {"user": user}
+
+
+def _normalize_status(value: Any) -> str:
+    raw = str(value or "").strip().lower()
+    if raw in ("aberto", "open"):
+        return "open"
+    if raw in ("fechado", "closed"):
+        return "closed"
+    if raw in ("cancelado", "cancelled"):
+        return "cancelled"
+    return raw or "closed"
+
+
+def _normalize_trade_row(row: dict[str, Any]) -> dict[str, Any]:
+    out = dict(row)
+    out["status"] = _normalize_status(out.get("status"))
+    side = str(out.get("side") or "").lower()
+    out["side"] = "buy" if side == "buy" else ("sell" if side == "sell" else side)
+    if out.get("trend") is None and out.get("tendencia") is not None:
+        out["trend"] = out.get("tendencia")
+    return out
+
+
+@app.get("/api/ui/health")
+def health() -> dict[str, Any]:
+    db = database_health()
+    return {
+        "status": "ok" if db.get("status") == "healthy" and db.get("canonical") else "degraded",
+        "service": "genesis-ui-api",
+        "database": db,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+
+@app.get("/api/ui/summary")
+def summary(
+    days: int = Query(default=7, ge=1, le=365),
+    symbol: str | None = Query(default=None),
+    _user: dict[str, str] = Depends(require_auth),
+) -> dict[str, Any]:
+    data = repository.get_summary(days=days, symbol=symbol)
+    recent = repository.list_trades(symbol=symbol, status="closed", limit=5, offset=0)
+    recent_n = [_normalize_trade_row(r) for r in recent]
+    profits = [float(r.get("profit_loss") or 0.0) for r in recent_n if (r.get("profit_loss") is not None)]
+    wins = [p for p in profits if p > 0]
+    losses = [p for p in profits if p < 0]
+    return {
+        **data,
+        "avg_profit": float(sum(wins) / len(wins)) if wins else 0.0,
+        "avg_loss": float(sum(losses) / len(losses)) if losses else 0.0,
+        "best_trade": float(max(profits)) if profits else 0.0,
+        "worst_trade": float(min(profits)) if profits else 0.0,
+        "recent_trades": recent_n,
+    }
+
+
+@app.get("/api/ui/open-positions")
+def open_positions(
+    symbol: str | None = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=500),
+    _user: dict[str, str] = Depends(require_auth),
+) -> list[dict[str, Any]]:
+    rows = repository.list_open_positions(symbol=symbol, limit=limit)
+    return [_normalize_trade_row(r) for r in rows]
+
+
+@app.get("/api/ui/trades")
+def trades(
+    symbol: str | None = Query(default=None),
+    status: str | None = Query(default=None, pattern="^(open|closed)?$"),
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+    _user: dict[str, str] = Depends(require_auth),
+) -> dict[str, Any]:
+    rows = repository.list_trades(
+        symbol=symbol,
+        status=status,
+        limit=limit,
+        offset=offset,
+    )
+    total = repository.count_trades(symbol=symbol, status=status)
+    return {
+        "data": [_normalize_trade_row(r) for r in rows],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+@app.get("/api/ui/trades/{trade_id}")
+def trade_detail(trade_id: str, _user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+    row = repository.get_trade(trade_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="trade_not_found")
+    return _normalize_trade_row(row)
+
+
+@app.get("/api/ui/filters")
+def filters(_user: dict[str, str] = Depends(require_auth)) -> dict[str, list[str]]:
+    return repository.get_filters()
+
+
+@app.get("/api/ui/control-center")
+def control_center(
+    days: int = Query(default=30, ge=1, le=90),
+    _user: dict[str, str] = Depends(require_auth),
+) -> dict[str, Any]:
+    return repository.get_control_center(days=days)
+
+
+@app.get("/api/ui/runtime-options")
+def runtime_options(_user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+    return worker_manager.options()
+
+
+@app.get("/api/ui/workers")
+def workers(_user: dict[str, str] = Depends(require_auth)) -> list[dict[str, Any]]:
+    return worker_manager.status()
+
+
+@app.post("/api/ui/workers/start")
+def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+    if not payload.assets:
+        raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
+    try:
+        return {"workers": worker_manager.start(payload.assets, payload.strategy)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/ui/workers/stop")
+def stop_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
+    if not payload.assets:
+        raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
+    try:
+        return {"workers": worker_manager.stop(payload.assets)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    host = os.getenv("UI_API_HOST", "0.0.0.0")
+    port = int(os.getenv("UI_API_PORT", "8010"))
+    uvicorn.run("api_ui:app", host=host, port=port, reload=False)

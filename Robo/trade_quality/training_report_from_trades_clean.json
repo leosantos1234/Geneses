@@ -1,0 +1,59 @@
+{
+  "dataset_size": 1200,
+  "feature_cols": [
+    "ativo",
+    "lado",
+    "preco_entrada",
+    "quantidade",
+    "import_source",
+    "strategy",
+    "decision_source",
+    "duracao_min",
+    "hora_entrada",
+    "dia_semana_entrada"
+  ],
+  "target_balance": {
+    "0": 877,
+    "1": 323
+  },
+  "auc": 0.6707692307692308,
+  "brier_score": 0.18001126996892577,
+  "probabilidade": {
+    "min": 0.062022247432686646,
+    "max": 0.635408662755508,
+    "mean": 0.257797671976021,
+    "std": 0.12333460577110439
+  },
+  "baseline_test": {
+    "count": 240,
+    "win_rate": 0.2708333333333333,
+    "lucro_total": -29.827209680000003,
+    "profit_factor": 0.44970121123210727,
+    "ev": -0.12428004033333336
+  },
+  "simulacao": {
+    "0.4": {
+      "count": 30,
+      "win_rate": 0.4666666666666667,
+      "lucro_total": -2.0264313399999994,
+      "profit_factor": 0.6655639121896839,
+      "ev": -0.06754771133333334
+    },
+    "0.5": {
+      "count": 7,
+      "win_rate": 1.0,
+      "lucro_total": 1.60639674,
+      "profit_factor": Infinity,
+      "ev": 0.22948524857142857
+    },
+    "0.6": {
+      "count": 3,
+      "win_rate": 1.0,
+      "lucro_total": 1.264988,
+      "profit_factor": Infinity,
+      "ev": 0.4216626666666667
+    }
+  },
+  "model_path": "c:\\Users\\emgepron\\Documents\\robo\\trade_quality\\model.pkl",
+  "predictions_path": "c:\\Users\\emgepron\\Documents\\robo\\trade_quality\\trade_quality_predictions.jsonl"
+}

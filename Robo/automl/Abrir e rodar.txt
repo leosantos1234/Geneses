@@ -1,0 +1,21 @@
+(venv_tf) C:\Users\emgepron\Documents\robo\automl>
+cd C:\Users\emgepron\Documents\robo\automl
+
+python automl_geral.py btc
+# ou
+python automl_geral.py eth
+# ou
+python automl_geral.py sol
+
+
+python aprovar_config.py btc
+# ou eth, sol, etc.
+
+
+
+Para aprovar 
+python aprovar_config.py btc
+
+python aprovar_config.py eth
+
+python aprovar_config.py sol

@@ -1,0 +1,27 @@
+Faça um relatório de acompanhamento do ativo AVAX no período informado, comparando:
+
+1. Estratégia fixa Swing Trend Following;
+2. Decisões do Commander em modo sombra.
+
+Período: [início] até [fim].
+
+Analise logs, banco de dados, métricas e eventos registrados. Informe:
+
+- Quantos ciclos foram executados;
+- Quantas decisões foram CREATED, BLOCKED, COMPLETED, ERROR e IN_PROGRESS;
+- Entradas e saídas da estratégia fixa;
+- Resultado financeiro, taxa de acerto e drawdown;
+- Decisões que o Commander teria tomado;
+- Quantas decisões foram iguais ou diferentes;
+- Quais divergências foram melhores ou piores;
+- Resultado hipotético do Commander com os mesmos custos, stops, alvos e trailing stops;
+- Trades evitados pelo Commander;
+- Trades que o Commander teria incluído;
+- Taxa de acerto de cada abordagem;
+- Retorno composto de cada abordagem;
+- Evidências dos logs e IDs das decisões;
+- Problemas de dados, timeouts, falhas ou ciclos não avaliados.
+
+Mantenha o sistema em modo read-only. Não altere configurações, não envie ordens e não migre o controle para o Commander.
+
+Conclua informando se o Commander apresentou vantagem estatisticamente consistente sobre a estratégia fixa. Só recomende migração se houver evidência suficiente, considerando desempenho, drawdown, custos, quantidade de trades e período fora da amostra.

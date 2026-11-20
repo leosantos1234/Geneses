@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: genesis_trading
+      POSTGRES_USER: genesis
+      POSTGRES_PASSWORD: ${GENESIS_POSTGRES_PASSWORD:?set GENESIS_POSTGRES_PASSWORD in the deployment environment}
+    ports:
+      - "5435:5432"
+    volumes:
+      - genesis_pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./Robo
+      dockerfile: Dockerfile.api
+    environment:
+      GENESIS_DATABASE_BACKEND: postgres
+      GENESIS_DATABASE_URL: ${GENESIS_DATABASE_URL:?set GENESIS_DATABASE_URL in the deployment environment}
+      GENESIS_ADMIN_EMAIL: ${GENESIS_ADMIN_EMAIL:?set GENESIS_ADMIN_EMAIL in the deployment environment}
+      GENESIS_ADMIN_PASSWORD: ${GENESIS_ADMIN_PASSWORD:?set GENESIS_ADMIN_PASSWORD in the deployment environment}
+      GENESIS_AUTH_SECRET: ${GENESIS_AUTH_SECRET:?set GENESIS_AUTH_SECRET in the deployment environment}
+    ports:
+      - "8010:8010"
+    depends_on:
+      - postgres
+
+  panel:
+    build:
+      context: ./Robo/ui/lovable_export/genesis-quant-terminal-main
+    ports:
+      - "8080:10000"
+    depends_on:
+      - api
+
+  worker:
+    build:
+      context: ./Robo
+      dockerfile: Dockerfile.worker
+    env_file:
+      - ./Robo/.env-btc
+    environment:
+      GENESIS_DATABASE_BACKEND: postgres
+      GENESIS_DATABASE_URL: ${GENESIS_DATABASE_URL:?set GENESIS_DATABASE_URL in the deployment environment}
+      ENV_FILE: .env-btc
+    depends_on:
+      - postgres
+
+volumes:
+  genesis_pgdata:

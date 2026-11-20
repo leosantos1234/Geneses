@@ -1,0 +1,163 @@
+{
+  "dataset": "trades_clean_recent_350",
+  "dataset_size": 350,
+  "context_coverage": 0.1657,
+  "feature_cols": [
+    "ativo",
+    "lado",
+    "strategy",
+    "decision_source",
+    "preco_entrada",
+    "quantidade",
+    "distancia_resistencia",
+    "distancia_suporte",
+    "ema20",
+    "ema50",
+    "ema200",
+    "inclinacao_ema20",
+    "distancia_preco_ema50",
+    "atr_normalizado",
+    "largura_bollinger",
+    "posicao_bollinger",
+    "rsi",
+    "volume_ratio",
+    "candles_desde_breakout",
+    "corpo_candle_pct",
+    "pavio_superior_pct",
+    "pavio_inferior_pct",
+    "hora_entrada",
+    "dia_semana_entrada",
+    "score_entrada_decisao",
+    "score_normalizado",
+    "decisao_final",
+    "intensidade_sinal",
+    "qtd_agentes_favor",
+    "qtd_agentes_contra",
+    "consenso_agentes",
+    "divergencia_agentes",
+    "rsi_sinal",
+    "tendencia_sinal",
+    "conflito_sinais",
+    "tipo_estrategia",
+    "breakout_valido",
+    "distancia_entrada_rompimento",
+    "atraso_entrada",
+    "win_rate_ultimos_10",
+    "win_rate_ultimos_20",
+    "resultado_ultimo_trade",
+    "sequencia_loss",
+    "rr_ratio",
+    "stop_distance_pct",
+    "take_distance_pct",
+    "tipo_ordem",
+    "slippage_estimado"
+  ],
+  "auc": 0.658,
+  "brier_score": 0.1894384235762084,
+  "probabilidade": {
+    "min": 0.10376151915335494,
+    "max": 0.7324457143043009,
+    "mean": 0.2769837162973974,
+    "std": 0.1423398120432457
+  },
+  "baseline_test": {
+    "count": 70,
+    "win_rate": 0.2857142857142857,
+    "lucro_total": -4.168823,
+    "profit_factor": 0.5975178317839077,
+    "ev": -0.059554614285714236
+  },
+  "simulacao": {
+    "0.35": {
+      "count": 13,
+      "win_rate": 0.46153846153846156,
+      "lucro_total": -1.39024601,
+      "profit_factor": 0.5748968807410682,
+      "ev": -0.10694200076923077
+    },
+    "0.4": {
+      "count": 11,
+      "win_rate": 0.5454545454545454,
+      "lucro_total": -1.13219814,
+      "profit_factor": 0.6241448472051185,
+      "ev": -0.10292710363636362
+    },
+    "0.45": {
+      "count": 9,
+      "win_rate": 0.5555555555555556,
+      "lucro_total": -1.07628609,
+      "profit_factor": 0.6289745281533841,
+      "ev": -0.11958734333333329
+    },
+    "0.5": {
+      "count": 7,
+      "win_rate": 0.5714285714285714,
+      "lucro_total": -1.15044286,
+      "profit_factor": 0.5863667787006214,
+      "ev": -0.16434897999999998
+    }
+  },
+  "top_features": [
+    {
+      "feature": "preco_entrada",
+      "importance": 0.1333569645395591
+    },
+    {
+      "feature": "sequencia_loss",
+      "importance": 0.10721891525503248
+    },
+    {
+      "feature": "resultado_ultimo_trade",
+      "importance": 0.10167250058783237
+    },
+    {
+      "feature": "win_rate_ultimos_10",
+      "importance": 0.09058339048958143
+    },
+    {
+      "feature": "hora_entrada",
+      "importance": 0.08195816743903132
+    },
+    {
+      "feature": "quantidade",
+      "importance": 0.07970681290489412
+    },
+    {
+      "feature": "win_rate_ultimos_20",
+      "importance": 0.07433216339973808
+    },
+    {
+      "feature": "dia_semana_entrada",
+      "importance": 0.05270925898422688
+    },
+    {
+      "feature": "distancia_preco_ema50",
+      "importance": 0.0354038528559581
+    },
+    {
+      "feature": "posicao_bollinger",
+      "importance": 0.027648348463089854
+    },
+    {
+      "feature": "distancia_entrada_rompimento",
+      "importance": 0.026043571927886592
+    },
+    {
+      "feature": "distancia_resistencia",
+      "importance": 0.024803069029505142
+    },
+    {
+      "feature": "distancia_suporte",
+      "importance": 0.023326697627168536
+    },
+    {
+      "feature": "ativo_BTCUSDT",
+      "importance": 0.021149793814297983
+    },
+    {
+      "feature": "ativo_BNBUSDT",
+      "importance": 0.01579855939930187
+    }
+  ],
+  "model_path": "C:\\Users\\emgepron\\Documents\\robo\\trade_quality\\model_context.pkl"
+}

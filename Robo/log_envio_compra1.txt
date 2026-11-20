@@ -1,0 +1,3 @@
+Parâmetros enviados: {'symbol': 'BTCUSDT', 'category': 'spot', 'side': 'Sell', 'orderType': 'Market', 'qty': '0.05248617', 'timeInForce': 'GTC', 'timestamp': 1735355451197, 'sign': 'ef1125af833bda74963c003ddbe04e1653a9921363913f951db5f85b758f743f'}
+Resposta da API: {'retCode': 10001, 'retMsg': 'empty value: apiTimestamp[1735355451197] apiKey[] apiSignature[ef1125af833bda74963c003ddbe04e1653a9921363913f951db5f85b758f743f]', 'result': {}, 'retExtInfo': {}, 'time': 1735355451765}
+

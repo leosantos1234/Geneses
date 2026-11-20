@@ -1,0 +1,6 @@
+Checar Novamente com flake8 Execute:
+flake8 trading_bot_rev17.1.py
+
+
+Formatar Código Automaticamente com black Execute no terminal:
+black trading_bot_rev17.1.py

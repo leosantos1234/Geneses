@@ -1,0 +1,56 @@
+{
+  "dataset": "trades_clean_recent_350",
+  "dataset_size": 350,
+  "feature_cols": [
+    "ativo",
+    "lado",
+    "preco_entrada",
+    "quantidade",
+    "strategy",
+    "decision_source",
+    "hora_entrada",
+    "dia_semana_entrada"
+  ],
+  "target_balance": {
+    "0": 249,
+    "1": 101
+  },
+  "auc": 0.615,
+  "brier_score": 0.19568089468370997,
+  "probabilidade": {
+    "min": 0.07215455831800768,
+    "max": 0.5631239118611844,
+    "mean": 0.2793464148011153,
+    "std": 0.10754531684765448
+  },
+  "baseline_test": {
+    "count": 70,
+    "win_rate": 0.2857142857142857,
+    "lucro_total": -5.7757820099999995,
+    "profit_factor": 0.551021386113236,
+    "ev": -0.0825111715714286
+  },
+  "simulacao": {
+    "0.4": {
+      "count": 10,
+      "win_rate": 0.5,
+      "lucro_total": -1.1177812,
+      "profit_factor": 0.4636406932583189,
+      "ev": -0.11177812000000004
+    },
+    "0.5": {
+      "count": 2,
+      "win_rate": 1.0,
+      "lucro_total": 0.64148593,
+      "profit_factor": Infinity,
+      "ev": 0.320742965
+    },
+    "0.6": {
+      "count": 0,
+      "win_rate": 0.0,
+      "lucro_total": 0.0,
+      "profit_factor": 0.0,
+      "ev": 0.0
+    }
+  }
+}

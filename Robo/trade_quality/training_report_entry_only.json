@@ -1,0 +1,66 @@
+{
+  "dataset_size": 1200,
+  "model_variant": "entry_only",
+  "feature_cols": [
+    "ativo",
+    "lado",
+    "preco_entrada",
+    "quantidade",
+    "strategy",
+    "decision_source",
+    "hora_entrada",
+    "dia_semana_entrada"
+  ],
+  "removed_non_entry_features": [
+    "duracao_min",
+    "timestamp_saida",
+    "preco_saida",
+    "pnl",
+    "resultado",
+    "import_source"
+  ],
+  "target_balance": {
+    "0": 877,
+    "1": 323
+  },
+  "auc": 0.6163076923076923,
+  "brier_score": 0.18745079433409778,
+  "probabilidade": {
+    "min": 0.08306624982903285,
+    "max": 0.6616571970150186,
+    "mean": 0.2580261677296038,
+    "std": 0.10969139838264018
+  },
+  "baseline_test": {
+    "count": 240,
+    "win_rate": 0.2708333333333333,
+    "lucro_total": -29.827209680000003,
+    "profit_factor": 0.44970121123210727,
+    "ev": -0.12428004033333336
+  },
+  "simulacao": {
+    "0.4": {
+      "count": 25,
+      "win_rate": 0.48,
+      "lucro_total": -1.0265882399999997,
+      "profit_factor": 0.7283821648405348,
+      "ev": -0.04106352960000002
+    },
+    "0.5": {
+      "count": 12,
+      "win_rate": 0.8333333333333334,
+      "lucro_total": 2.1515826600000003,
+      "profit_factor": 10.313344629252658,
+      "ev": 0.17929855500000005
+    },
+    "0.6": {
+      "count": 3,
+      "win_rate": 1.0,
+      "lucro_total": 1.24554822,
+      "profit_factor": Infinity,
+      "ev": 0.41518274000000005
+    }
+  },
+  "model_path": "c:\\Users\\emgepron\\Documents\\robo\\trade_quality\\model.pkl",
+  "predictions_path": "c:\\Users\\emgepron\\Documents\\robo\\trade_quality\\trade_quality_predictions.jsonl"
+}

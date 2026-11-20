@@ -1,0 +1,64 @@
+services:
+  - type: web
+    name: genesis-panel-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Robo/Dockerfile.api
+    dockerContext: ./Robo
+    healthCheckPath: /api/ui/health
+    envVars:
+      - key: GENESIS_DATABASE_BACKEND
+        value: postgres
+      - key: GENESIS_DATABASE_URL
+        fromDatabase:
+          name: genesis-db
+          property: connectionString
+      - key: GENESIS_ADMIN_EMAIL
+        sync: false
+      - key: GENESIS_ADMIN_PASSWORD
+        sync: false
+      - key: GENESIS_AUTH_SECRET
+        sync: false
+
+  - type: web
+    name: genesis-panel
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Robo/ui/lovable_export/genesis-quant-terminal-main/Dockerfile
+    dockerContext: ./Robo/ui/lovable_export/genesis-quant-terminal-main
+    envVars:
+      - key: VITE_API_BASE
+        sync: false
+
+  - type: worker
+    name: genesis-worker
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Robo/Dockerfile.worker
+    dockerContext: ./Robo
+    dockerCommand: python trading_bot_geneses.py
+    envVars:
+      - key: GENESIS_DATABASE_BACKEND
+        value: postgres
+      - key: GENESIS_DATABASE_URL
+        fromDatabase:
+          name: genesis-db
+          property: connectionString
+      - key: BYBIT_API_KEY
+        sync: false
+      - key: BYBIT_API_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PAPER_MODE
+        value: "true"
+      - key: ENABLE_LIVE_TRADING
+        value: "false"
+      - key: ALLOW_EXCHANGE_WRITE
+        value: "false"
+      - key: BYBIT_TESTNET
+        value: "true"
+
+databases:
+  - name: genesis-db
+    plan: basic-256mb

@@ -1,0 +1,48 @@
+{
+  "timestamp_utc": "2026-02-14T14:11:15.539993+00:00",
+  "parametros": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1",
+    "candles": 5000
+  },
+  "metricas": {
+    "lucro_total": 0.0,
+    "winrate": 0.0,
+    "media_ganho": 0.0,
+    "media_perda": 0.0,
+    "profit_factor": 0.0,
+    "max_drawdown_pct": 0.0,
+    "total_trades": 0
+  },
+  "resultado_backtest": {
+    "estrategia": "BREAKOUT",
+    "direcao": null,
+    "lucro": 0,
+    "saldo_final": 10000,
+    "saldo_inicial": 10000,
+    "num_trades": 0,
+    "num_wins": 0,
+    "num_losses": 0,
+    "win_rate": 0,
+    "lucro_medio": 0,
+    "perda_media": 0,
+    "max_drawdown": 0,
+    "trades": [],
+    "relatorio_completo": {
+      "estrategia": "BREAKOUT",
+      "direcao": null,
+      "saldo_inicial": 10000,
+      "saldo_final": 10000,
+      "lucro_total": 0,
+      "num_trades": 0,
+      "num_wins": 0,
+      "num_losses": 0,
+      "winrate": 0,
+      "lucro_medio": 0,
+      "perda_media": 0,
+      "max_drawdown_pct": 0,
+      "trades": []
+    }
+  },
+  "trades": []
+}

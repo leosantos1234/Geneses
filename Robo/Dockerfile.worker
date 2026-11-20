@@ -1,0 +1,7 @@
+FROM python:3.12-slim
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app
+COPY requirements_robo_fluxo.txt /app/requirements_robo_fluxo.txt
+RUN pip install --no-cache-dir -r requirements_robo_fluxo.txt psycopg[binary]
+COPY . /app
+CMD ["python", "trading_bot_geneses.py", ".env-btc"]

@@ -1,0 +1,108 @@
+📋 Resumo do Modelo Breakout – Estratégia & Parâmetros
+1. Objetivo da Estratégia
+
+Detectar rompimentos (breakouts) de níveis de resistência ou suporte para operar em movimentos explosivos do mercado.
+2. Critérios Técnicos Principais
+
+    Detecção de Breakout:
+
+        Calcula resistência e suporte com base nos últimos candles.
+
+        Confirma rompimento se:
+
+            Alta: preço (close ou wick) rompe resistência.
+
+            Baixa: preço (close ou wick) rompe suporte.
+
+        Outros critérios: RSI, volume, proximidade do rompimento.
+
+3. Modos de Operação
+A. Modo Normal (Recomendado para produção)
+
+    Critério de entrada:
+
+        Net Score (“score de compra - score de venda”) ≥ 2
+
+        Exige pelo menos 2 confirmações favoráveis antes de entrar.
+
+
+    Score final/ponderado para filtros:
+
+        Mínimo 6 pontos para permitir entrada.
+
+    Vantagem: Menos entradas, mas trades mais seguros e consistentes.
+
+Modo "normal" ou "agressivo" - No caso abaixo, está no odo "normal"
+
+def detect_breakout(
+    df,
+    breakout_margin=0.0005,
+    rigor="normal"  # "normal" (net score ≥ 2), "agressivo" (net score ≥ 1)
+):
+
+
+B. Modo Relaxado (Para testes, IA, ou ambientes simulados)
+
+    Critério de entrada:
+
+        Net Score ≥ 1
+
+        Basta 1 confirmação pra permitir entrada.
+
+    Score final/ponderado para filtros:
+
+        Mínimo 2 pontos para entrada.
+
+    Vantagem: Mais entradas, serve para testar a robustez do sistema, mas pode gerar mais ruído/stop.
+
+    Ative o modo relaxado:
+    **os.environ\["MODO\_RELAXADO"] = "true"**
+
+    **(ou desative para modo normal)**
+
+
+
+
+4. Configuração de Parâmetros
+
+    Margem de breakout:
+    breakout_margin=0.0005 (ajuste se precisar mais/menos sensível)
+
+    Intervalo de análise:
+
+        Pode usar “1m”, “5m”, “15m”, mas sempre colete candles suficientes (>= 100)
+
+    ATR mínimo para volatilidade:
+
+        Recomenda-se só operar se ATR acima de determinado valor (ex: 50)
+
+5. Gestão de Risco
+
+    RRR (Risk-Reward Ratio):
+
+        Só entra se relação Risco:Retorno ≥ 1.5
+
+    TP/SL/Trailing Stop:
+
+        Calculados via ATR ou percentuais configurados.
+
+6. Resumo dos Passos
+
+    Busca e calcula indicadores e níveis (Resistência/Suporte).
+
+    Detecta breakout com lógica de score (buy/sell).
+
+    Verifica se net score e score final atingem o mínimo do modo configurado.
+
+    Calcula e ajusta TP/SL/Trailing.
+
+    Envia ordem (limit/market conforme score/condição).
+
+    Monitora a ordem até encerrar ou stop.
+
+DICA DE OURO
+
+Sempre registre os parâmetros que está usando no momento do trade (score mínimo, rigor, ATR, margens etc) para poder comparar resultados e evoluir o sistema!
+
+Se quiser, já posso te mandar isso em formato .txt bonitinho pra copiar/colar direto.
+Qualquer ajuste, só pedir!

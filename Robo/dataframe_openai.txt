@@ -1,0 +1,98 @@
+def ajustar_dataframe(df):
+    """
+    Ajusta o DataFrame para garantir que ele tenha as mesmas colunas usadas no treinamento do modelo.
+    """
+    # Definir as colunas que o modelo espera
+    colunas_modelo = ['SMA_10', 'SMA_50', 'close', 'volume']
+    
+    # Verifique se todas as colunas necessárias estão no DataFrame
+    missing_cols = [col for col in colunas_modelo if col not in df.columns]
+    for col in missing_cols:
+        df[col] = 0  # Preencher as colunas ausentes com 0 ou outro valor padrão
+    
+    # Certificar-se de que o DataFrame tem apenas as colunas necessárias
+    df = df[colunas_modelo]
+    
+    return df
+
+def monitorar_ordens(session, df, RRR_MINIMA, acao, order_type, tamanho_lote):
+    trailing_stop = None  # Inicializa o Trailing Stop
+    stop_loss = None  # Inicializa o Stop-Loss
+    take_profit = None  # Inicializa o Take-Profit
+    ordem_ativa = False  # Flag para monitorar se há uma ordem ativa
+
+    while True:  # Loop contínuo
+        try:
+            logging.info("📈 Iniciando cálculo de indicadores e monitoramento de ordens...")
+            
+            # Calcular ATR antes de usar
+            df = calculate_indicators(df)  # Calculando todos os indicadores, incluindo o ATR
+            atr = df['ATR'].iloc[-1]  # Pegando o valor do ATR calculado
+
+            # Obter o preço atual
+            preco_atual = obter_preco_mercado(session, "BTCUSDT")  # Supondo que você tenha uma função para obter o preço
+
+            if preco_atual is None:
+                logging.error("❌ Não foi possível obter o preço atual.")
+                return  # Sair da função se o preço não for obtido
+
+            logging.info(f"📌 Preço Atual: {preco_atual}")
+
+            # Ajustar as colunas do DataFrame para corresponder ao modelo treinado
+            df_ajustado = ajustar_dataframe(df)
+
+            # Escolher o método de Stop-Loss/Take-Profit com base nos indicadores
+            metodo = escolher_metodo_stop_take(df_ajustado, preco_atual)
+
+            # Log para informar o método escolhido
+            logging.info(f"🧠 Método escolhido para Stop-Loss/Take-Profit: {metodo}")
+
+            # Calcular Stop-Loss e Take-Profit antes de entrar no loop de monitoramento
+            if not ordem_ativa:
+                # Determinar a operação: compra ou venda
+                if acao == "Buy":
+                    side = "Buy"
+                else:
+                    side = "Sell"
+                
+                # Agora, a lógica de Stop-Loss/Take-Profit depende do método escolhido
+                if metodo == 'Fibonacci':
+                    stop_loss, take_profit = calcular_stop_take_dinamico(preco_atual, atr, RRR_MINIMA, side, metodo)
+                elif metodo == 'ATR':
+                    stop_loss, take_profit = calcular_stop_take_dinamico(preco_atual, atr, RRR_MINIMA, side, metodo)
+                elif metodo == 'Bollinger':
+                    stop_loss, take_profit = calcular_stop_take_dinamico(preco_atual, atr, RRR_MINIMA, side, metodo)
+                elif metodo == 'RSI':
+                    stop_loss, take_profit = calcular_stop_take_dinamico(preco_atual, atr, RRR_MINIMA, side, metodo)
+                elif metodo == 'MACD':
+                    stop_loss, take_profit = calcular_stop_take_dinamico(preco_atual, atr, RRR_MINIMA, side, metodo)
+
+                # Inicialize o Trailing Stop
+                trailing_stop = preco_atual + (atr * 0.5) if acao == "Buy" else preco_atual - (atr * 0.5)
+                
+                logging.info(f"📌 Preço Atual: {preco_atual}")  # Adicionando o preço atual no log  
+                logging.info(f"✅ Stop-Loss inicializado: {stop_loss}, Take-Profit inicializado: {take_profit}")
+                logging.info(f"📉 Trailing Stop inicializado em: {trailing_stop}")
+
+                tipo_ordem = 'sell' if side == "Sell" else 'buy'
+                ordem_ativa = True  
+
+            # Dentro do loop, agora apenas ajustamos o Trailing Stop, sem recalcular Stop-Loss ou Take-Profit
+            trailing_stop = ajustar_trailing_stop(preco_atual, trailing_stop, atr, tipo_ordem, take_profit, stop_loss)
+            logging.info(f"🔄 Novo Trailing Stop: {trailing_stop}")
+            logging.info(f"📊 Stop-Loss: {stop_loss}, Take-Profit: {take_profit}, Tipo de Ordem: {side}")  # Tipo de Ordem adicionado no log
+
+            # Lógica para Take-Profit e Stop-Loss continua a mesma
+
+            # === LÓGICA PARA TAKE-PROFIT E STOP-LOSS ===
+            # O código restante não muda.
+
+            logging.info("⏳ Aguardando próximo ciclo de avaliação...")
+            time.sleep(5)  # Aguardar 5 segundos para a próxima iteração
+
+        except KeyboardInterrupt:
+                logging.info("⏹ Monitoramento encerrado pelo usuário.")
+                break  # Permite que o loop seja encerrado quando o usuário interromper
+        except Exception as e:
+                logging.error(f"❌ Erro inesperado durante o monitoramento: {e}", exc_info=True)
+                continue  # Continuação do loop em caso de erro inesperado

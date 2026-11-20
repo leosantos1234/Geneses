@@ -1,0 +1,42 @@
+[
+    {
+        "titulo": "Vitalik Buterin sold 17,000 ETH this month as ether fell 37%",
+        "descricao": "The Ethereum co-founder's tracked wallets dropped from 241,000 ETH to 224,000 ETH in February, with sales routed through CoW Protocol in small batches to limit market impact."
+    },
+    {
+        "titulo": "CoinDesk 20 performance update: Solana (SOL) falls 4.2%, leading index lower",
+        "descricao": "Ethereum (ETH), down 3.7% from Thursday, joined Solana (SOL) as an underperformer."
+    },
+    {
+        "titulo": "Tom Lee's Bitmine boosts ether holdings to 4.47 million tokens with $98 million ETH purchase",
+        "descricao": "Bitmine chair Tom Lee says company keeps accumulating ETH during market pullback while targeting $253M in annual staking rewards."
+    },
+    {
+        "titulo": "BitMine adds $90 million in ETH — Tom Lee says crypto sentiment reminiscent of 2018 and 2022 bottoms",
+        "descricao": "The Ethereum treasury firm continues its buying spree with its largest weekly ETH purchase in token terms this year."
+    },
+    {
+        "titulo": "BlackRock debuts staked ether ETF as demand grows for yield in crypto funds",
+        "descricao": "The BlackRock’s iShares Staked Ethereum Trust ETF (ETHB) lets investors earn staking rewards alongside spot ETH exposure."
+    },
+    {
+        "titulo": "Moonwell's $1.12 nightmare: A pricing glitch just let bots seize millions in ETH collateral",
+        "descricao": "A misconfigured Chainlink price oracle on DeFi lender Moonwell briefly valued Coinbase Wrapped ETH (cbETH) at about $1 instead of roughly $2,200."
+    },
+    {
+        "titulo": "WLFI surges 10% after Apex stablecoin deal, outperforming BTC and ETH",
+        "descricao": "The Trump-affiliated token rose on news that a $3.5 trillion asset servicer will pilot USD1, while BTC and ETH continue to trade near multi-week lows."
+    },
+    {
+        "titulo": "Bitcoin holds above $72,000 as crypto market pauses after breakout",
+        "descricao": "BTC and ETH edge higher during Asia and Europe hours as traders assess macro risks, derivatives positioning and whether bitcoin can sustain a push toward $80,000."
+    },
+    {
+        "titulo": "'Mini crypto winter' nearly over, says Tom Lee as Bitmine ramps up pace of ether acquisition",
+        "descricao": "The firm ramped up the pace of ETH accumulation despite sitting on staggering unrealized losses on its $9 billion crypto holdings."
+    },
+    {
+        "titulo": "Putting the treasury to work: The Ethereum Foundation just staked 70,000 ETH to fund its future",
+        "descricao": "The staking commenced with a 2,016 ETH deposit, and uses Dirk and Vouch, open-source validator tools developed by infrastructure firm Attestant"
+    }
+]

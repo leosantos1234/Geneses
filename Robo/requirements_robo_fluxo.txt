@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-dotenv
+pandas
+numpy
+requests
+openai
+pybit
+joblib
+scikit-learn
+xgboost
+plotly
+imbalanced-learn
+psycopg[binary]>=3.2,<4
+mcp>=1.28,<2

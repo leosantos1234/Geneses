@@ -1,0 +1,34 @@
+PRODUCTION DEFECTS TO FIX:
+
+A. Unknown/Disabled Skill currently: 
+   catch SkillNotFoundError, SkillDisabledError, continue silently
+   FIX:
+   raise CommanderSkillExecutionError for both cases
+
+B. Skill result aggregation currently:
+   only result.evidence extracted
+   FIX:
+   preserve skill_id, skill_version, status, confidence, evidence, risk_flags, data_gaps, limitations
+
+C. MCP tool accounting currently:
+   assumes _audit_record.mcp_tools_called
+   FIX:
+   inspect actual audit schema from Sprint 6, implement real extraction
+
+D. MAX_SKILL_CALLS currently:
+   4 approved skills = 4 max, so limit never testable
+   FIX:
+   move counter to request scope, count every attempt before execution
+
+E. MAX_RAG_CALLS currently:
+   rag_call_count = 0 inside method, resets every call
+   FIX:
+   move counter to request scope, increment only after actual retrieve
+
+F. DATA_NOT_AVAILABLE preservation:
+   currently in evidence as dict
+   FIX:
+   preserve exactly in data_gaps as canonical marker string
+
+STATUS: 11/15 async tests passing. Failures are fixture-related, not logic.
+NEXT: Fix production code, then fix test fixtures, then run hardened suite.

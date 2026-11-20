@@ -1,0 +1,42 @@
+Analise o desempenho diário do Genesis usando exclusivamente os registros do banco referentes ao período informado.
+
+Para cada ativo, apresente:
+
+1. quantidade de decisões;
+2. entradas realizadas;
+3. decisões bloqueadas;
+4. estratégia escolhida;
+5. regime identificado;
+6. lado da operação;
+7. preço de entrada e saída;
+8. PnL bruto e líquido;
+9. taxas, funding e slippage;
+10. win rate;
+11. drawdown;
+12. motivo das entradas;
+13. motivo dos bloqueios;
+14. Skills, ferramentas MCP e contexto RAG utilizados;
+15. vínculo entre decisão, ordem e trade;
+16. operações aparentemente corretas;
+17. operações aparentemente incorretas;
+18. possíveis falhas de dados, execução ou registro.
+
+Depois:
+
+- compare os ativos;
+- avalie as estratégias;
+- identifique padrões por regime;
+- indique se algum filtro está excessivamente rígido ou permissivo;
+- sugira possíveis calibrações;
+- não altere código, banco, modelo ou configuração;
+- não recomende liberar operações apenas com base em poucos trades;
+- diferencie claramente fatos registrados, inferências e sugestões.
+
+Finalize com:
+
+STATUS DO SISTEMA =
+ATIVOS COM MELHOR DESEMPENHO =
+ATIVOS COM PIOR DESEMPENHO =
+PRINCIPAIS RISCOS =
+CALIBRAÇÕES SUGERIDAS =
+NÍVEL DE CONFIANÇA DA ANÁLISE =

@@ -1,0 +1,10 @@
+.env*
+.venv*
+*/.venv*
+node_modules
+ui/lovable_export/*/node_modules
+*.db
+*.db-*
+logs
+__pycache__
+*.pyc

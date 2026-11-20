@@ -1,0 +1,38 @@
+├── robo/
+│   ├── main.py
+│   ├── compra1.py
+│   ├── indicadores_tecnicos11.py
+│   ├── leotelegram.py
+│   ├── bybit_orders.py
+│   ├── gestor_de_trade.py
+│   ├── backtest_module.py
+│   ├── .env
+│   ├── requirements.txt
+│
+│   ├── dashboard/
+│   │   ├── __init__.py
+│   │   ├── callbacks.py
+│   │   ├── layout.py
+│   │   ├── dash_server.py
+│   │   ├── dash_launcher.py
+│
+│   ├── estrategia_entrada/
+│   │   ├── estrategia_breakout_filtros.py
+│   │   ├── estrategia_mean_reversion.py
+│   │   ├── estrategia_market_making.py
+│   │   ├── modulo_volatilidade.py
+│   │   ├── backtesting_geral.py
+│   │   ├── entrada_mercado.py
+│
+│   ├── estrategias/
+│   │   ├── lstm_rnn.py
+│   │   ├── analise_sentimento.py
+│
+│   ├── banco_trade/
+│   │   ├── db_trades.py
+│
+│   ├── utils/
+│   │   ├── dashboard.py
+│   │   ├── logger_config.py
+│   │   ├── utils_market.py
+│   │   ├── utils_telegram.py

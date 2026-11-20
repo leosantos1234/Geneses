@@ -1,0 +1,73 @@
+{
+  "estatisticas": {
+    "brier_score": 0.25,
+    "auc": 0.5,
+    "calibracao_por_bucket": [
+      {
+        "faixa": "0.50-0.55",
+        "prob_media": 0.5,
+        "win_rate_real": 0.2137,
+        "erro_calibracao": 0.2863,
+        "qtd_trades": 131
+      }
+    ],
+    "monotonicidade": {
+      "monotonicidade": false,
+      "correlacao": 0.0,
+      "confiavel": false
+    }
+  },
+  "comparacao": {
+    "baseline": {
+      "total_trades": 131,
+      "wins": 28,
+      "losses": 103,
+      "win_rate": 0.21374,
+      "loss_rate": 0.78626,
+      "lucro_total": 10.512498,
+      "prejuizo_total": 20.332587,
+      "lucro_medio": 0.375446,
+      "perda_media": 0.197404,
+      "EV": -0.074963,
+      "profit_factor": 0.517027,
+      "drawdown": 0.0
+    },
+    "filtrado": {
+      "total_trades": 131,
+      "wins": 28,
+      "losses": 103,
+      "win_rate": 0.21374,
+      "loss_rate": 0.78626,
+      "lucro_total": 10.512498,
+      "prejuizo_total": 20.332587,
+      "lucro_medio": 0.375446,
+      "perda_media": 0.197404,
+      "EV": -0.074963,
+      "profit_factor": 0.517027,
+      "drawdown": 0.0
+    },
+    "delta": {
+      "win_rate": 0.0,
+      "lucro_total": 0.0,
+      "drawdown": 0.0,
+      "profit_factor": 0.0,
+      "EV": 0.0
+    }
+  },
+  "impacto_filtro": {
+    "trades_removidos_pct": 0.0,
+    "lucro_removido": 0,
+    "prejuizo_evitar": 0,
+    "eficiencia_filtro": 0
+  },
+  "total_trades": 131,
+  "gerado_em": "2026-04-09T02:58:15.091509",
+  "avaliacao_modelo": {
+    "status_modelo": "reprovado",
+    "confiabilidade": 70.0,
+    "recomendacao": "Modelo não deve ser usado para decisão operacional até nova calibração.",
+    "motivos": [
+      "sem_poder_preditivo"
+    ]
+  }
+}
