@@ -20,17 +20,21 @@ from utils.trade_transition_manager import detectar_regime_mercado
 from utils.indicadores import preparar_df
 
 
-# Recebe o nome do .env como argumento na linha de comando (ex: .env-btc)
-dotenv_path = sys.argv[1] if len(sys.argv) > 1 else ".env"
-dotenv_path = os.path.abspath(dotenv_path)
+# O ambiente local pode informar um arquivo .env, mas no Render as variáveis
+# chegam diretamente pelo ambiente do serviço. Importar este módulo nunca deve
+# encerrar o worker apenas porque /app/.env não existe.
+dotenv_arg = sys.argv[1] if len(sys.argv) > 1 else ""
+dotenv_path = os.path.abspath(dotenv_arg) if dotenv_arg else ""
 
-if not os.path.exists(dotenv_path):
-    print(f"âŒ Arquivo ENV nÃ£o encontrado: {dotenv_path}")
-    sys.exit(1)
+if dotenv_path and os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path=dotenv_path)
+    print(f"ðŸ”— Arquivo .env carregado: {dotenv_path}")
+else:
+    if dotenv_path:
+        print(f"âš ï¸ Arquivo ENV nÃ£o encontrado: {dotenv_path}; usando variáveis do ambiente")
+    else:
+        print("ENV por arquivo não encontrado; usando variáveis do ambiente")
 
-load_dotenv(dotenv_path=dotenv_path)  # Carrega o ENV correto
-
-print(f"ðŸ”— Arquivo .env carregado: {dotenv_path}")
 symbol = os.getenv("ATIVOS", "DESCONHECIDO")
 print(f"ðŸ§© Ativo em operaÃ§Ã£o: {symbol}")
 
