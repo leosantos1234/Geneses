@@ -54,6 +54,8 @@ services:
         value: okx
       - key: OKX_READ_ONLY
         value: "true"
+      - key: OKX_DEMO_TRADING
+        value: "false"
       - key: OKX_API_KEY
         sync: false
       - key: OKX_API_SECRET
