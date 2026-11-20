@@ -13,6 +13,8 @@ from banco_trade.db_trades import inicializar_banco
 
 ROOT = Path(__file__).resolve().parent
 children: dict[str, subprocess.Popen] = {}
+child_started_at: dict[str, float] = {}
+restart_counts: dict[str, int] = {}
 
 
 def _assets() -> list[str]:
@@ -21,6 +23,7 @@ def _assets() -> list[str]:
 
 def _stop(asset: str) -> None:
     process = children.pop(asset, None)
+    child_started_at.pop(asset, None)
     if process is None or process.poll() is not None:
         return
     process.terminate()
@@ -37,13 +40,38 @@ def _start(asset: str, strategy: str) -> None:
     env["ATIVOS"] = f"{asset}USDT"
     env["GENESIS_STRATEGY_SELECTION"] = strategy
     env["ROBO_ENV_FILE"] = ""
+    # Garante que cada print do processo filho apareça imediatamente no Render.
+    env["PYTHONUNBUFFERED"] = "1"
+    started_at = time.monotonic()
     children[asset] = subprocess.Popen(
         [sys.executable, str(ROOT / "trading_bot_geneses.py")],
         cwd=ROOT,
         env=env,
         stdin=subprocess.DEVNULL,
     )
-    print(f"worker iniciado asset={asset} strategy={strategy}", flush=True)
+    child_started_at[asset] = started_at
+    restart_counts[asset] = restart_counts.get(asset, 0) + 1
+    print(
+        f"worker iniciado asset={asset} strategy={strategy} "
+        f"pid={children[asset].pid} tentativa={restart_counts[asset]}",
+        flush=True,
+    )
+
+
+def _log_child_exit(asset: str, process: subprocess.Popen) -> None:
+    returncode = process.returncode
+    uptime = time.monotonic() - child_started_at.pop(asset, time.monotonic())
+    if returncode is None:
+        detail = "returncode=desconhecido"
+    elif returncode < 0:
+        detail = f"returncode={returncode} sinal={-returncode}"
+    else:
+        detail = f"returncode={returncode}"
+    print(
+        f"worker encerrado asset={asset} pid={process.pid} {detail} "
+        f"uptime_seconds={uptime:.1f}",
+        flush=True,
+    )
 
 
 def _shutdown(_signum, _frame) -> None:
@@ -69,7 +97,7 @@ def main() -> None:
                 _stop(asset)
         for asset, process in list(children.items()):
             if process.poll() is not None:
-                print(f"worker encerrado asset={asset} code={process.returncode}", flush=True)
+                _log_child_exit(asset, process)
                 children.pop(asset, None)
         time.sleep(5)
 
