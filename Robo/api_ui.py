@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env.ui"), override=False)
 
 from ui_backend import repository
-from ui_backend.auth import authenticate, issue_token, require_auth
+from ui_backend.auth import authenticate, create_user, issue_token, require_auth
 from ui_backend import worker_manager
 from genesis_runtime import database_health
 
@@ -43,6 +43,12 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class UserCreateRequest(BaseModel):
+    email: str
+    password: str
+    role: str = "viewer"
+
+
 class WorkerSelectionRequest(BaseModel):
     assets: list[str]
     strategy: str
@@ -55,6 +61,26 @@ def login(payload: LoginRequest) -> dict[str, Any]:
 @app.get("/api/auth/me")
 def current_user(user: dict[str, str] = Depends(require_auth)) -> dict[str, Any]:
     return {"user": user}
+
+
+def _require_admin(user: dict[str, str] = Depends(require_auth)) -> dict[str, str]:
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Apenas administradores podem gerenciar usuários")
+    return user
+
+
+@app.get("/api/auth/users")
+def users(_admin: dict[str, str] = Depends(_require_admin)) -> list[dict[str, Any]]:
+    repository.ensure_ui_users_table()
+    return repository.list_ui_users()
+
+
+@app.post("/api/auth/users", status_code=201)
+def add_user(payload: UserCreateRequest, _admin: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
+    try:
+        return {"user": create_user(payload.email, payload.password, payload.role)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 def _normalize_status(value: Any) -> str:

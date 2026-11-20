@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 import os
+import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -40,6 +41,106 @@ def _iso_since(days: int) -> str:
 
 def _dict_row(row: sqlite3.Row | None) -> dict[str, Any]:
     return dict(row) if row is not None else {}
+
+
+def ensure_ui_users_table() -> None:
+    """Create the UI users table when the API first needs authentication.
+
+    This is intentionally additive and idempotent so a fresh Render database
+    does not depend on a separate, manually-run migration command.
+    """
+    conn = _get_conn()
+    try:
+        _execute(conn, """
+            CREATE TABLE IF NOT EXISTS ui_users (
+                id TEXT PRIMARY KEY,
+                email TEXT NOT NULL,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'viewer',
+                is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CHECK (role IN ('admin', 'viewer'))
+            )
+        """)
+        _execute(conn, "CREATE UNIQUE INDEX IF NOT EXISTS ui_users_email_lower_idx ON ui_users (LOWER(email))")
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_ui_user(email: str) -> dict[str, Any] | None:
+    conn = _get_conn()
+    try:
+        row = _execute(
+            conn,
+            "SELECT id, email, password_hash, role, is_active FROM ui_users WHERE LOWER(email) = LOWER(?) LIMIT 1",
+            [email.strip()],
+        ).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+def upsert_ui_admin(email: str, password_hash: str) -> dict[str, Any]:
+    """Keep the environment-configured administrator available after deploys."""
+    conn = _get_conn()
+    try:
+        existing = _execute(
+            conn,
+            "SELECT id FROM ui_users WHERE LOWER(email) = LOWER(?) LIMIT 1",
+            [email.strip()],
+        ).fetchone()
+        if existing:
+            _execute(
+                conn,
+                """UPDATE ui_users
+                   SET email = ?, password_hash = ?, role = 'admin', is_active = TRUE,
+                       updated_at = CURRENT_TIMESTAMP
+                   WHERE id = ?""",
+                [email.strip().lower(), password_hash, existing["id"]],
+            )
+            user_id = existing["id"]
+        else:
+            user_id = str(uuid.uuid4())
+            _execute(
+                conn,
+                """INSERT INTO ui_users (id, email, password_hash, role, is_active)
+                   VALUES (?, ?, ?, 'admin', TRUE)""",
+                [user_id, email.strip().lower(), password_hash],
+            )
+        conn.commit()
+        return {"id": user_id, "email": email.strip().lower(), "role": "admin"}
+    finally:
+        conn.close()
+
+
+def create_ui_user(email: str, password_hash: str, role: str = "viewer") -> dict[str, Any]:
+    conn = _get_conn()
+    try:
+        user_id = str(uuid.uuid4())
+        _execute(
+            conn,
+            """INSERT INTO ui_users (id, email, password_hash, role, is_active)
+               VALUES (?, ?, ?, ?, TRUE)""",
+            [user_id, email.strip().lower(), password_hash, role],
+        )
+        conn.commit()
+        return {"id": user_id, "email": email.strip().lower(), "role": role, "is_active": True}
+    finally:
+        conn.close()
+
+
+def list_ui_users() -> list[dict[str, Any]]:
+    conn = _get_conn(read_only=True)
+    try:
+        rows = _execute(
+            conn,
+            "SELECT id, email, role, is_active, created_at, updated_at FROM ui_users ORDER BY email ASC",
+        ).fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
 
 
 _OPEN_TRADE_SQL = "LOWER(TRIM(COALESCE(status, ''))) IN ('aberto', 'open', 'pending', 'partially_filled') AND COALESCE(quantity, 0) > 0"
