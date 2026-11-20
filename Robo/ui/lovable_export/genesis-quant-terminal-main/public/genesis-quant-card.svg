@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Genesis Quant</title>
+  <desc id="desc">Centro de controle de operações quantitativas</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#090d12"/>
+      <stop offset="1" stop-color="#111d26"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#25d6df"/>
+      <stop offset="1" stop-color="#62f4ce"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="28" fill="url(#bg)"/>
+  <circle cx="1040" cy="90" r="210" fill="#18c7d5" opacity=".08"/>
+  <circle cx="150" cy="570" r="250" fill="#21e6c1" opacity=".05"/>
+  <path d="M130 365 260 265l92 65 132-146 116 86 134-126" fill="none" stroke="url(#cyan)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M700 144v84h84" fill="none" stroke="#62f4ce" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="130" y="470" fill="#f4fbff" font-family="Arial, Helvetica, sans-serif" font-size="70" font-weight="700" letter-spacing="2">GENESIS QUANT</text>
+  <text x="136" y="525" fill="#9bb6c4" font-family="Arial, Helvetica, sans-serif" font-size="28" letter-spacing="5">CENTRO DE CONTROLE</text>
+</svg>
