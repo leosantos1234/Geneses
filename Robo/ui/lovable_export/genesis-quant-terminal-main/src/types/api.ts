@@ -164,6 +164,9 @@ export interface ExchangeBalanceSnapshot {
   used_in_positions: number;
   positions_notional: number;
   unrealized_pnl: number;
+  period_days: number;
+  realized_pnl: number;
+  period_trades: number;
   open_positions: { symbol?: string; side?: string; size: number; notional_usd: number; unrealized_pnl: number }[];
   fetched_at: string;
 }

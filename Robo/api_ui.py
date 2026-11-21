@@ -158,10 +158,11 @@ def open_positions(
     return [_normalize_trade_row(r) for r in rows]
 
 
-def _exchange_balance_snapshot() -> dict[str, Any]:
+def _exchange_balance_snapshot(days: int = 7) -> dict[str, Any]:
     now = time.monotonic()
+    cache_key = f"data_{days}"
     with _BALANCE_LOCK:
-        cached = _BALANCE_CACHE.get("data")
+        cached = _BALANCE_CACHE.get(cache_key)
         if cached and now < float(_BALANCE_CACHE.get("expires_at", 0.0)):
             return cached
     from exchange.factory import active_exchange_name, create_exchange_client
@@ -206,6 +207,7 @@ def _exchange_balance_snapshot() -> dict[str, Any]:
             "unrealized_pnl": pnl,
         })
 
+    history = repository.get_summary(days=days)
     snapshot = {
         "exchange": active_exchange_name().upper(),
         "currency": "USDT",
@@ -216,18 +218,24 @@ def _exchange_balance_snapshot() -> dict[str, Any]:
         "used_in_positions": max(usdt_equity - (available_usdt or available_account), 0.0),
         "positions_notional": notional,
         "unrealized_pnl": unrealized_pnl,
+        "period_days": days,
+        "realized_pnl": float(history.get("pnl_total") or 0.0),
+        "period_trades": int(history.get("total_trades") or 0),
         "open_positions": positions,
         "fetched_at": datetime.utcnow().isoformat() + "Z",
     }
     with _BALANCE_LOCK:
-        _BALANCE_CACHE.update({"data": snapshot, "expires_at": time.monotonic() + 15.0})
+        _BALANCE_CACHE.update({cache_key: snapshot, "expires_at": time.monotonic() + 15.0})
     return snapshot
 
 
 @app.get("/api/ui/exchange-balance")
-def exchange_balance(_user: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
+def exchange_balance(
+    days: int = Query(default=7, ge=1, le=3650),
+    _user: dict[str, str] = Depends(_require_admin),
+) -> dict[str, Any]:
     try:
-        return _exchange_balance_snapshot()
+        return _exchange_balance_snapshot(days=days)
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Saldo da corretora indisponível: {type(exc).__name__}") from exc
 
