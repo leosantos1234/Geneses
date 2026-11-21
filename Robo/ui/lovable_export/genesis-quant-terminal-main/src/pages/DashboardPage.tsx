@@ -112,6 +112,7 @@ function LiveWorkerLogsPaged() {
   const [customUntil, setCustomUntil] = useState("");
   const [olderLogs, setOlderLogs] = useState<import("@/types/api").LiveLog[]>([]);
   const [nextBeforeId, setNextBeforeId] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const rangeHours = selectedRange === "custom" ? undefined : Number(selectedRange);
   const enabled = selectedRange !== "custom" || Boolean(customSince && customUntil);
   const filters = { asset: selectedAsset, hours: rangeHours, since: selectedRange === "custom" ? customSince : undefined, until: selectedRange === "custom" ? customUntil : undefined, level: selectedLevel, category: selectedCategory };
@@ -127,10 +128,20 @@ function LiveWorkerLogsPaged() {
     setOlderLogs((current) => [...current, ...page.items]);
     setNextBeforeId(page.next_before_id);
   };
+  const downloadLogs = async () => {
+    setDownloading(true);
+    try {
+      await api.downloadLogs(selectedAsset, rangeHours, selectedRange === "custom" ? customSince : undefined, selectedRange === "custom" ? customUntil : undefined);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Não foi possível baixar os logs");
+    } finally {
+      setDownloading(false);
+    }
+  };
   return <section className="rounded-lg border border-border bg-card p-4">
     <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
       <div><div className="flex items-center gap-2"><ScrollText className="h-4 w-4 text-primary" /><h2 className="text-sm font-semibold">Logs dos ativos</h2><span className="h-2 w-2 animate-pulse rounded-full bg-profit" /></div><p className="mt-1 text-xs text-muted-foreground">Atualização automática a cada 3 segundos · {activeAssets.length} worker(s) ativo(s)</p></div>
-      <div className="flex flex-wrap items-center gap-2"><Select value={selectedRange} onValueChange={setSelectedRange}><SelectTrigger className="h-8 w-44 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0.25">Ao vivo</SelectItem><SelectItem value="1">Última hora</SelectItem><SelectItem value="4">Últimas 4 horas</SelectItem><SelectItem value="24">Últimas 24 horas</SelectItem><SelectItem value="48">Últimos 2 dias</SelectItem><SelectItem value="168">Últimos 7 dias</SelectItem><SelectItem value="720">Últimos 30 dias</SelectItem><SelectItem value="custom">Personalizado</SelectItem></SelectContent></Select><Select value={selectedLevel} onValueChange={setSelectedLevel}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os níveis</SelectItem><SelectItem value="INFO">Informações</SelectItem><SelectItem value="WARNING">Avisos</SelectItem><SelectItem value="ERROR">Erros</SelectItem></SelectContent></Select><Select value={selectedCategory} onValueChange={setSelectedCategory}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os eventos</SelectItem><SelectItem value="errors">Erros</SelectItem><SelectItem value="orders">Ordens</SelectItem><SelectItem value="restarts">Reinícios</SelectItem></SelectContent></Select></div>
+      <div className="flex flex-wrap items-center gap-2"><Select value={selectedRange} onValueChange={setSelectedRange}><SelectTrigger className="h-8 w-44 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0.25">Ao vivo</SelectItem><SelectItem value="1">Última hora</SelectItem><SelectItem value="4">Últimas 4 horas</SelectItem><SelectItem value="24">Últimas 24 horas</SelectItem><SelectItem value="48">Últimos 2 dias</SelectItem><SelectItem value="168">Últimos 7 dias</SelectItem><SelectItem value="720">Últimos 30 dias</SelectItem><SelectItem value="custom">Personalizado</SelectItem></SelectContent></Select><Select value={selectedLevel} onValueChange={setSelectedLevel}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os níveis</SelectItem><SelectItem value="INFO">Informações</SelectItem><SelectItem value="WARNING">Avisos</SelectItem><SelectItem value="ERROR">Erros</SelectItem></SelectContent></Select><Select value={selectedCategory} onValueChange={setSelectedCategory}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os eventos</SelectItem><SelectItem value="errors">Erros</SelectItem><SelectItem value="orders">Ordens</SelectItem><SelectItem value="restarts">Reinícios</SelectItem></SelectContent></Select><Button size="sm" variant="outline" disabled={downloading || (selectedRange === "custom" && !(customSince && customUntil))} onClick={downloadLogs}><Download className="mr-1.5 h-3.5 w-3.5" />{downloading ? "Baixando..." : "Baixar log"}</Button></div>
     </div>
     {selectedRange === "custom" && <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><label>De <input type="datetime-local" value={customSince} onChange={(event) => setCustomSince(event.target.value)} className="ml-1 rounded border border-border bg-background px-2 py-1 text-foreground" /></label><label>Até <input type="datetime-local" value={customUntil} onChange={(event) => setCustomUntil(event.target.value)} className="ml-1 rounded border border-border bg-background px-2 py-1 text-foreground" /></label></div>}
     <div className="mb-3 flex flex-wrap gap-2">{["ALL", ...assets].map((asset) => <button key={asset} type="button" onClick={() => setSelectedAsset(asset)} className={`rounded-md border px-3 py-1.5 text-xs transition-colors ${selectedAsset === asset ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>{asset === "ALL" ? "Todos" : asset}</button>)}</div>
