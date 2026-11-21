@@ -499,6 +499,43 @@ def _ensure_postgres_operational_schema():
                 symbol TEXT PRIMARY KEY, updated_at TEXT NOT NULL, state_json TEXT NOT NULL
             )
         """)
+        # Additive observability/RAG tables used by the production worker.
+        # Keep these idempotent so existing Render databases can be upgraded
+        # safely during the normal worker startup.
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS rag_records (
+                rag_record_id UUID PRIMARY KEY, source_type TEXT NOT NULL,
+                source_id TEXT NOT NULL, symbol TEXT, timestamp_utc TIMESTAMPTZ NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), tags TEXT[] DEFAULT ARRAY[]::TEXT[],
+                summary TEXT NOT NULL, content TEXT NOT NULL, content_hash TEXT NOT NULL,
+                metadata JSONB DEFAULT '{}'::jsonb, schema_version TEXT NOT NULL DEFAULT '1.0'
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS canonical_market_candles_1m (
+                symbol TEXT NOT NULL, exchange TEXT NOT NULL, timeframe TEXT NOT NULL CHECK (timeframe = '1m'),
+                candle_open_time TIMESTAMPTZ NOT NULL, candle_close_time TIMESTAMPTZ NOT NULL,
+                open NUMERIC, high NUMERIC, low NUMERIC, close NUMERIC, volume NUMERIC, turnover NUMERIC,
+                closed BOOLEAN NOT NULL CHECK (closed = TRUE), record_provenance TEXT NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                PRIMARY KEY (symbol, exchange, timeframe, candle_open_time)
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS analytical_candle_telemetry (
+                symbol TEXT NOT NULL, timeframe TEXT NOT NULL, candle_open_time TIMESTAMPTZ NOT NULL,
+                candle_close_time TIMESTAMPTZ NOT NULL, open NUMERIC, high NUMERIC, low NUMERIC,
+                close NUMERIC, volume NUMERIC, atr NUMERIC, atr_percent NUMERIC, volume_ratio NUMERIC,
+                body_fraction NUMERIC, regime INTEGER CHECK (regime IN (1,2,3,4)), winning_rule TEXT,
+                candle_closed BOOLEAN NOT NULL, record_provenance TEXT NOT NULL,
+                feature_vector JSONB NOT NULL DEFAULT '{}'::jsonb,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                PRIMARY KEY (symbol, timeframe, candle_open_time)
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS rag_records_symbol_idx ON rag_records(symbol)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS canonical_market_candles_1m_close_idx ON canonical_market_candles_1m(symbol, candle_close_time)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS analytical_candle_telemetry_close_idx ON analytical_candle_telemetry(symbol, timeframe, candle_close_time)")
         cursor.execute("CREATE INDEX IF NOT EXISTS trades_decision_id_idx ON trades(decision_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_symbol_created_idx ON decision_trace(symbol, created_at DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_trade_idx ON decision_trace(trade_id)")
