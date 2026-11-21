@@ -222,6 +222,23 @@ def list_ui_logs(*, asset: str | None = None, limit: int = 200, hours: float | N
         conn.close()
 
 
+def append_ui_log(*, asset: str, strategy: str | None, message: str, level: str = "INFO") -> None:
+    """Persist one stdout/stderr line forwarded by the Render dispatcher."""
+    conn = _get_conn()
+    try:
+        symbol = asset.strip().upper()
+        symbol = symbol if symbol.endswith("USDT") else f"{symbol}USDT"
+        ts = datetime.utcnow().isoformat()
+        _execute(
+            conn,
+            "INSERT INTO log_events (ts, level, logger, strategy, symbol, message) VALUES (?, ?, ?, ?, ?, ?)",
+            [ts, level, "render_worker", strategy, symbol, message.rstrip("\r\n")],
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 _OPEN_TRADE_SQL = "LOWER(TRIM(COALESCE(status, ''))) IN ('aberto', 'open', 'pending', 'partially_filled') AND COALESCE(quantity, 0) > 0"
 
 

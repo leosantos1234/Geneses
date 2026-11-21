@@ -5,6 +5,7 @@ import os
 import signal
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -54,7 +55,14 @@ def _start(asset: str, strategy: str) -> None:
         cwd=ROOT,
         env=env,
         stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        bufsize=1,
     )
+    threading.Thread(target=_forward_child_output, args=(asset, strategy, children[asset]), daemon=True).start()
     child_started_at[asset] = started_at
     restart_counts[asset] = restart_counts.get(asset, 0) + 1
     print(
@@ -62,6 +70,26 @@ def _start(asset: str, strategy: str) -> None:
         f"pid={children[asset].pid} tentativa={restart_counts[asset]}",
         flush=True,
     )
+
+
+def _forward_child_output(asset: str, strategy: str, process: subprocess.Popen) -> None:
+    """Mirror child stdout/stderr to Render and the Dashboard log store."""
+    stream = process.stdout
+    if stream is None:
+        return
+    try:
+        for line in stream:
+            message = line.rstrip("\r\n")
+            if not message:
+                continue
+            print(f"[{asset}] {message}", flush=True)
+            level = "ERROR" if any(token in message.upper() for token in ("ERROR", "TRACEBACK", "EXCEPTION")) else "WARNING" if "WARNING" in message.upper() else "INFO"
+            try:
+                repository.append_ui_log(asset=asset, strategy=strategy, message=message, level=level)
+            except Exception as exc:
+                print(f"[LOG_PERSISTENCE] asset={asset} error={type(exc).__name__}", flush=True)
+    finally:
+        stream.close()
 
 
 def _log_child_exit(asset: str, process: subprocess.Popen) -> None:
