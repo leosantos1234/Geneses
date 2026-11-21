@@ -250,13 +250,35 @@ def logs_page(
 @app.get("/api/ui/logs/download", response_class=PlainTextResponse)
 def download_logs(
     asset: str | None = Query(default=None),
-    limit: int = Query(default=5000, ge=1, le=10000),
+    limit: int = Query(default=100000, ge=1, le=100000),
     hours: float | None = Query(default=None, gt=0, le=720),
     since: str | None = Query(default=None),
     until: str | None = Query(default=None),
+    level: str | None = Query(default=None),
+    category: str | None = Query(default=None),
     _user: dict[str, str] = Depends(require_auth),
 ) -> PlainTextResponse:
-    rows = repository.list_ui_logs(asset=asset, limit=limit, hours=hours, since=since, until=until)
+    rows: list[dict[str, Any]] = []
+    before_id: int | None = None
+    page_size = min(limit, 1000)
+    while len(rows) < limit:
+        page = repository.list_ui_logs_page(
+            asset=asset,
+            limit=min(page_size, limit - len(rows)),
+            hours=hours,
+            since=since,
+            until=until,
+            before_id=before_id,
+            level=level,
+            category=category,
+        )
+        batch = page["items"]
+        if not batch:
+            break
+        rows.extend(batch)
+        if not page["has_more"]:
+            break
+        before_id = page["next_before_id"]
     lines = [
         f"[{row.get('ts', '')}] [{row.get('level', '')}] "
         f"[{row.get('symbol') or 'UNKNOWN'}] "

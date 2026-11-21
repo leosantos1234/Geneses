@@ -93,13 +93,15 @@ export const api = {
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
   logs: (asset?: string, hours?: number, since?: string, until?: string) => request<LiveLog[]>("/api/ui/logs", { asset, hours, since, until, limit: 250 }),
   logsPage: (params: { asset?: string; hours?: number; since?: string; until?: string; before_id?: number; level?: string; category?: string }) => request<import("@/types/api").LiveLogPage>("/api/ui/logs/page", { ...params, limit: 250 }),
-  downloadLogs: async (asset?: string, hours?: number, since?: string, until?: string) => {
+  downloadLogs: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) => {
     const url = new URL(`${API_BASE}/api/ui/logs/download`);
-    url.searchParams.set("limit", "5000");
+    url.searchParams.set("limit", "100000");
     if (asset && asset !== "ALL") url.searchParams.set("asset", asset);
     if (hours) url.searchParams.set("hours", String(hours));
     if (since) url.searchParams.set("since", since);
     if (until) url.searchParams.set("until", until);
+    if (level && level !== "ALL") url.searchParams.set("level", level);
+    if (category && category !== "ALL") url.searchParams.set("category", category);
     const raw = localStorage.getItem("genesis_quant_auth");
     let accessToken: string | undefined;
     try { accessToken = raw ? JSON.parse(raw)?.session?.access_token : undefined; } catch { localStorage.removeItem("genesis_quant_auth"); }
