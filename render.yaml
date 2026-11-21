@@ -88,6 +88,8 @@ services:
         sync: false
       - key: LOG_DB_CAPTURE_ALL
         value: "true"
+      - key: LOG_DB_RETENTION_DAYS
+        value: "7"
       - key: GENESIS_REMOTE_WORKER_CONTROL
         value: "true"
       - key: GENESIS_ASSET_LIST

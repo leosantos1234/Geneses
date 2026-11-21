@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import threading
+import time
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
@@ -71,6 +72,11 @@ class OperationalDatabaseHandler(logging.Handler):
         self.db_path = db_path
         self.keywords = [k.strip().lower() for k in (keywords or "").split(",") if k.strip()]
         self.capture_all = os.getenv("LOG_DB_CAPTURE_ALL", "0").strip().lower() in ("1", "true", "yes", "y")
+        try:
+            self.retention_days = max(float(os.getenv("LOG_DB_RETENTION_DAYS", "0")), 0.0)
+        except ValueError:
+            self.retention_days = 0.0
+        self._last_cleanup = 0.0
         self._lock = threading.Lock()
         self._conn = connect_operational_database()
         if database_backend() == "sqlite":
@@ -124,8 +130,20 @@ class OperationalDatabaseHandler(logging.Handler):
                     (ts, record.levelname, record.name, strategy, symbol, msg),
                 )
                 self._conn.commit()
+            self._cleanup_old_logs()
         except Exception:
             self.handleError(record)
+
+    def _cleanup_old_logs(self) -> None:
+        if self.retention_days <= 0 or time.monotonic() - self._last_cleanup < 900:
+            return
+        cutoff = datetime.utcnow().timestamp() - (self.retention_days * 86400)
+        cutoff_iso = datetime.utcfromtimestamp(cutoff).isoformat()
+        placeholder = "%s" if database_backend() == "postgres" else "?"
+        with self._lock:
+            self._conn.execute(f"DELETE FROM log_events WHERE ts < {placeholder}", (cutoff_iso,))
+            self._conn.commit()
+            self._last_cleanup = time.monotonic()
 
 
 def configurar_logger_global(nome_arquivo: str = "trading_bot_geneses.log", modo: str = "info"):

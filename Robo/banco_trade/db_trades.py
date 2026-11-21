@@ -539,6 +539,8 @@ def _ensure_postgres_operational_schema():
         cursor.execute("CREATE INDEX IF NOT EXISTS trades_decision_id_idx ON trades(decision_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_symbol_created_idx ON decision_trace(symbol, created_at DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_trace_trade_idx ON decision_trace(trade_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS log_events_ts_idx ON log_events(ts)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS log_events_symbol_ts_idx ON log_events(symbol, ts DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_events_decision_ts_idx ON decision_events(decision_id, event_ts, event_id)")
         conn.commit()
     finally:
