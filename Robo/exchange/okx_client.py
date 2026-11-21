@@ -304,6 +304,22 @@ class OKXClient:
             })
         return self._bybit_response(rows)
 
+    def get_funding_balance(self, *, coin=None, **_kwargs) -> dict:
+        """Consulta o saldo parado na conta Funding da OKX."""
+        data = self._request("GET", "/api/v5/asset/balances", params={"ccy": coin}, private=True)
+        rows = []
+        for item in data.get("data", []):
+            balance = item.get("bal") or "0"
+            available = item.get("availBal") or balance
+            rows.append({
+                "coin": item.get("ccy"),
+                "walletBalance": balance,
+                "equity": balance,
+                "totalAvailableBalance": available,
+                "availableToWithdraw": available,
+            })
+        return self._bybit_response(rows)
+
     def get_positions(self, *, category="linear", symbol=None, **_kwargs) -> dict:
         data = self._request("GET", "/api/v5/account/positions", params={
             "instType": "SWAP", "instId": self._inst_id(symbol, category) if symbol else None,

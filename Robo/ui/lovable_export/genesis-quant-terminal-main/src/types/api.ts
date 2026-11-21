@@ -158,7 +158,8 @@ export interface ExchangeBalanceSnapshot {
   exchange: string;
   currency: string;
   total_equity: number;
-  usdt_equity: number;
+  trading_equity: number;
+  funding_balance: number;
   available_usdt: number;
   used_in_positions: number;
   positions_notional: number;

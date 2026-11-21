@@ -175,6 +175,13 @@ def _exchange_balance_snapshot() -> dict[str, Any]:
     usdt = next((coin for coin in account.get("coin", []) if str(coin.get("coin", "")).upper() == "USDT"), {})
     usdt_equity = float(usdt.get("equity") or usdt.get("walletBalance") or 0.0)
     available_usdt = float(usdt.get("totalAvailableBalance") or usdt.get("availableToWithdraw") or 0.0)
+    funding_usdt = 0.0
+    funding_available = 0.0
+    if hasattr(client, "get_funding_balance"):
+        funding_response = client.get_funding_balance(coin="USDT")
+        funding_coin = next((coin for coin in funding_response.get("result", {}).get("list", []) if str(coin.get("coin", "")).upper() == "USDT"), {})
+        funding_usdt = float(funding_coin.get("equity") or funding_coin.get("walletBalance") or 0.0)
+        funding_available = float(funding_coin.get("totalAvailableBalance") or funding_coin.get("availableToWithdraw") or 0.0)
 
     positions_response = client.get_positions(category="linear")
     positions = []
@@ -202,9 +209,10 @@ def _exchange_balance_snapshot() -> dict[str, Any]:
     snapshot = {
         "exchange": active_exchange_name().upper(),
         "currency": "USDT",
-        "total_equity": total_equity,
-        "usdt_equity": usdt_equity,
-        "available_usdt": available_usdt or available_account,
+        "total_equity": total_equity + funding_usdt,
+        "trading_equity": usdt_equity,
+        "funding_balance": funding_usdt,
+        "available_usdt": (available_usdt or available_account) + funding_available,
         "used_in_positions": max(usdt_equity - (available_usdt or available_account), 0.0),
         "positions_notional": notional,
         "unrealized_pnl": unrealized_pnl,
