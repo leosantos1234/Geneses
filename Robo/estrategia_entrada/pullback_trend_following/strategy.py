@@ -242,18 +242,30 @@ def _backtest_reference(df_1h: pd.DataFrame, df_4h: pd.DataFrame, df_daily: pd.D
         balance *= 1.0 + pnl / 100.0 - cost_per_trade
         peak = max(peak, balance)
         max_dd = min(max_dd, balance / peak - 1.0)
+    # Este backtest é a referência histórica de 36 meses usada nos estudos
+    # locais. O PnL de cada trade é uma variação percentual; portanto,
+    # ``lucro_total`` não pode ser a soma desses percentuais em um contrato
+    # que espera lucro monetário. O saldo composto é a métrica canônica.
+    lucro_composto = balance - 1000.0
+    custo_pullback_total = len(trades) * cost_per_trade
     return {
         "estrategia": STRATEGY_NAME,
         "sem_trade": not trades,
         "num_trades": len(trades),
-        "lucro_total": sum(pnls),
-        "lucro_bruto": sum(pnls),
-        "lucro_liquido_estimado": (balance - 1000.0),
+        "lucro_total": lucro_composto,
+        "lucro_total_pct_linear": sum(pnls),
+        "lucro_bruto_pct": sum(pnls),
+        "lucro_bruto": lucro_composto,
+        "lucro_liquido_estimado": lucro_composto,
         "saldo_inicial": 1000.0,
         "saldo_final": balance,
         "retorno_composto_pct": (balance / 1000.0 - 1.0) * 100.0,
+        "retorno_pct": (balance / 1000.0 - 1.0) * 100.0,
         "max_drawdown_pct": max_dd * 100.0,
-        "custos_estimados_pct": len(trades) * cost_per_trade * 100.0,
+        "custos_estimados_pct": custo_pullback_total * 100.0,
+        "custos_simulados": custo_pullback_total,
+        "custos_simulados_aplicados": True,
+        "custos_modelo": "pullback_cost_per_trade_composto",
         "winrate": (sum(p > 0 for p in pnls) / len(pnls) * 100.0 if pnls else 0.0),
         "trade_log": trades,
         "regime": regime,
