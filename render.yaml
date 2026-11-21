@@ -90,6 +90,38 @@ services:
         value: "true"
       - key: GENESIS_ASSET_LIST
         value: BTC,ETH,BNB,SOL,XRP,AVAX
+      - key: MODO_VALIDACAO
+        value: agressivo
+      - key: INTERVAL
+        value: "5"
+      - key: PULLBACK_ENTRY_TIMEFRAME
+        value: 1h
+      - key: PULLBACK_STOP_ATR
+        value: "1.8"
+      - key: PULLBACK_TARGET_ATR
+        value: "3.0"
+      - key: PULLBACK_TRAILING_ATR
+        value: "2.0"
+      - key: PULLBACK_VOLUME_MIN_RATIO
+        value: "0.8"
+      - key: PULLBACK_COOLDOWN_CANDLES
+        value: "3"
+      - key: PULLBACK_COST_PER_TRADE
+        value: "0.00095"
+      - key: PULLBACK_LIVE_BALANCE_PCT
+        value: "1.0"
+      - key: PULLBACK_LIVE_MAX_NOTIONAL_USDT
+        value: "50"
+      - key: PULLBACK_LIVE_COMPLETE_TO_MINIMUM
+        value: "1"
+      - key: PULLBACK_ENABLED
+        value: "1"
+      - key: PULLBACK_HISTORICAL_BACKTEST_ENABLED
+        value: "1"
+      - key: PULLBACK_BACKTEST_PARITY
+        value: "1"
+      - key: PULLBACK_LIVE_EXECUTOR_ENABLED
+        value: "1"
 
 databases:
   - name: genesis-db
