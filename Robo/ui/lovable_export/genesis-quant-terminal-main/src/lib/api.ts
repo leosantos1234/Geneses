@@ -123,7 +123,7 @@ export const api = {
     const headers = accessToken ? { Authorization: "Bearer " + accessToken } : {};
     const rows: LiveLog[] = [];
     let beforeId: number | undefined;
-    for (let pageNumber = 0; pageNumber < 100; pageNumber += 1) {
+    for (let pageNumber = 0; pageNumber < 400; pageNumber += 1) {
       const url = new URL(API_BASE + "/api/ui/logs/page");
       const params: Record<string, string | number | undefined> = {
         asset: asset && asset !== "ALL" ? asset : undefined,
@@ -131,16 +131,24 @@ export const api = {
         level: level && level !== "ALL" ? level : undefined,
         category: category && category !== "ALL" ? category : undefined,
         before_id: beforeId,
-        limit: 1000,
+        limit: 250,
       };
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
       });
-      let res: Response;
-      try {
-        res = await fetch(url.toString(), { headers });
-      } catch (error) {
-        throw new ApiError("NÃ£o foi possÃ­vel conectar Ã  API para baixar os logs: " + (error instanceof Error ? error.message : "erro de rede"), 0);
+      let res: Response | undefined;
+      let lastError: unknown;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          res = await fetch(url.toString(), { headers });
+          if (res.ok || res.status === 401) break;
+        } catch (error) {
+          lastError = error;
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 700 * (attempt + 1)));
+      }
+      if (!res) {
+        throw new ApiError("NÃ£o foi possÃ­vel conectar Ã  API para baixar os logs (pÃ¡gina " + (pageNumber + 1) + "): " + (lastError instanceof Error ? lastError.message : "erro de rede"), 0);
       }
       if (res.status === 401) {
         localStorage.removeItem("genesis_quant_auth");
