@@ -215,18 +215,24 @@ def workers(_user: dict[str, str] = Depends(require_auth)) -> list[dict[str, Any
 def logs(
     asset: str | None = Query(default=None),
     limit: int = Query(default=200, ge=1, le=500),
+    hours: float | None = Query(default=None, gt=0, le=720),
+    since: str | None = Query(default=None),
+    until: str | None = Query(default=None),
     _user: dict[str, str] = Depends(require_auth),
 ) -> list[dict[str, Any]]:
-    return repository.list_ui_logs(asset=asset, limit=limit)
+    return repository.list_ui_logs(asset=asset, limit=limit, hours=hours, since=since, until=until)
 
 
 @app.get("/api/ui/logs/download", response_class=PlainTextResponse)
 def download_logs(
     asset: str | None = Query(default=None),
     limit: int = Query(default=5000, ge=1, le=10000),
+    hours: float | None = Query(default=None, gt=0, le=720),
+    since: str | None = Query(default=None),
+    until: str | None = Query(default=None),
     _user: dict[str, str] = Depends(require_auth),
 ) -> PlainTextResponse:
-    rows = repository.list_ui_logs(asset=asset, limit=limit)
+    rows = repository.list_ui_logs(asset=asset, limit=limit, hours=hours, since=since, until=until)
     lines = [
         f"[{row.get('ts', '')}] [{row.get('level', '')}] "
         f"[{row.get('symbol') or 'UNKNOWN'}] "

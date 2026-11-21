@@ -187,7 +187,7 @@ def list_ui_worker_states() -> list[dict[str, Any]]:
         conn.close()
 
 
-def list_ui_logs(*, asset: str | None = None, limit: int = 200) -> list[dict[str, Any]]:
+def list_ui_logs(*, asset: str | None = None, limit: int = 200, hours: float | None = None, since: str | None = None, until: str | None = None) -> list[dict[str, Any]]:
     """Return recent structured worker logs for the live Dashboard view."""
     conn = _get_conn(read_only=True)
     try:
@@ -199,6 +199,16 @@ def list_ui_logs(*, asset: str | None = None, limit: int = 200) -> list[dict[str
             symbol = symbol if symbol.endswith("USDT") else f"{symbol}USDT"
             clauses.append("symbol = ?")
             args.append(symbol)
+        if hours is not None:
+            since = (datetime.utcnow() - timedelta(hours=max(float(hours), 0.01))).isoformat()
+            clauses.append("ts >= ?")
+            args.append(since)
+        elif since:
+            clauses.append("ts >= ?")
+            args.append(since)
+        if until:
+            clauses.append("ts <= ?")
+            args.append(until)
         where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
         rows = _execute(
             conn,
