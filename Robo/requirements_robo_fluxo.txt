@@ -8,7 +8,7 @@ dash==2.18.2
 openai
 pybit
 joblib
-scikit-learn
+scikit-learn==1.6.1
 tensorflow==2.18.0
 xgboost
 plotly
