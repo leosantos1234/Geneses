@@ -210,6 +210,15 @@ def workers(_user: dict[str, str] = Depends(require_auth)) -> list[dict[str, Any
     return worker_manager.status()
 
 
+@app.get("/api/ui/logs")
+def logs(
+    asset: str | None = Query(default=None),
+    limit: int = Query(default=200, ge=1, le=500),
+    _user: dict[str, str] = Depends(require_auth),
+) -> list[dict[str, Any]]:
+    return repository.list_ui_logs(asset=asset, limit=limit)
+
+
 @app.post("/api/ui/workers/start")
 def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
     if not payload.assets:

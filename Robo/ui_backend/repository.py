@@ -187,6 +187,31 @@ def list_ui_worker_states() -> list[dict[str, Any]]:
         conn.close()
 
 
+def list_ui_logs(*, asset: str | None = None, limit: int = 200) -> list[dict[str, Any]]:
+    """Return recent structured worker logs for the live Dashboard view."""
+    conn = _get_conn(read_only=True)
+    try:
+        safe_limit = min(max(int(limit), 1), 500)
+        clauses = []
+        args: list[Any] = []
+        if asset and asset.upper() != "ALL":
+            symbol = asset.strip().upper()
+            symbol = symbol if symbol.endswith("USDT") else f"{symbol}USDT"
+            clauses.append("symbol = ?")
+            args.append(symbol)
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        rows = _execute(
+            conn,
+            f"""SELECT id, ts, level, logger, strategy, symbol, message
+                FROM log_events {where}
+                ORDER BY id DESC LIMIT {safe_limit}""",
+            args,
+        ).fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        conn.close()
+
+
 _OPEN_TRADE_SQL = "LOWER(TRIM(COALESCE(status, ''))) IN ('aberto', 'open', 'pending', 'partially_filled') AND COALESCE(quantity, 0) > 0"
 
 

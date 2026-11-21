@@ -70,6 +70,7 @@ class OperationalDatabaseHandler(logging.Handler):
         super().__init__()
         self.db_path = db_path
         self.keywords = [k.strip().lower() for k in (keywords or "").split(",") if k.strip()]
+        self.capture_all = os.getenv("LOG_DB_CAPTURE_ALL", "0").strip().lower() in ("1", "true", "yes", "y")
         self._lock = threading.Lock()
         self._conn = connect_operational_database()
         if database_backend() == "sqlite":
@@ -82,7 +83,9 @@ class OperationalDatabaseHandler(logging.Handler):
             msg_lower = msg.lower()
             if any(p in msg_lower for p in self.IGNORE_PHRASES):
                 return
-            if self.keywords:
+            if self.capture_all:
+                pass
+            elif self.keywords:
                 if not any(k in msg_lower for k in self.keywords):
                     return
             elif record.levelno < logging.WARNING:
@@ -92,6 +95,10 @@ class OperationalDatabaseHandler(logging.Handler):
             m = re.search(r"\b[A-Z]{3,6}USDT\b", msg)
             if m:
                 symbol = m.group(0)
+            if not symbol:
+                configured_asset = os.getenv("ATIVOS", "").split(",")[0].strip().upper()
+                if configured_asset:
+                    symbol = configured_asset if configured_asset.endswith("USDT") else f"{configured_asset}USDT"
 
             strategy = None
             for name in (
@@ -100,6 +107,8 @@ class OperationalDatabaseHandler(logging.Handler):
                 "EARLY_TREND",
                 "MARKET_MAKING_LATERAL",
                 "MARKET_MAKING",
+                "PULLBACK_TREND_FOLLOWING",
+                "SWING_TREND_FOLLOWING",
                 "MR",
                 "MM",
             ):

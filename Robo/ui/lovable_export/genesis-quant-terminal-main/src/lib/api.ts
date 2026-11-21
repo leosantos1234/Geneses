@@ -9,6 +9,7 @@ import type {
   ControlCenterResponse,
   RuntimeOptionsResponse,
   WorkerStatus,
+  LiveLog,
 } from "@/types/api";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://genesis-panel-api.onrender.com";
@@ -90,6 +91,7 @@ export const api = {
   controlCenter: (days = 30) => request<ControlCenterResponse>("/api/ui/control-center", { days }),
   runtimeOptions: () => request<RuntimeOptionsResponse>("/api/ui/runtime-options"),
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
+  logs: (asset?: string) => request<LiveLog[]>("/api/ui/logs", { asset, limit: 250 }),
   startWorkers: (payload: { assets: string[]; strategy: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/start", payload),
   stopWorkers: (payload: { assets: string[]; strategy?: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/stop", { ...payload, strategy: payload.strategy || "" }),
 };

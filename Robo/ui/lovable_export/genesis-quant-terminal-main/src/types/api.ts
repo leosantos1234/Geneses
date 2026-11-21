@@ -131,6 +131,16 @@ export interface WorkerStatus {
   stopped_at?: number;
 }
 
+export interface LiveLog {
+  id: number;
+  ts: string;
+  level: string;
+  logger?: string;
+  strategy?: string;
+  symbol?: string;
+  message: string;
+}
+
 export interface RuntimeOptionsResponse {
   assets: RuntimeOption[];
   strategies: RuntimeOption[];
