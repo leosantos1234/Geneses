@@ -92,6 +92,22 @@ export const api = {
   runtimeOptions: () => request<RuntimeOptionsResponse>("/api/ui/runtime-options"),
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
   logs: (asset?: string) => request<LiveLog[]>("/api/ui/logs", { asset, limit: 250 }),
+  downloadLogs: async (asset?: string) => {
+    const url = new URL(`${API_BASE}/api/ui/logs/download`);
+    url.searchParams.set("limit", "5000");
+    if (asset && asset !== "ALL") url.searchParams.set("asset", asset);
+    const raw = localStorage.getItem("genesis_quant_auth");
+    let accessToken: string | undefined;
+    try { accessToken = raw ? JSON.parse(raw)?.session?.access_token : undefined; } catch { localStorage.removeItem("genesis_quant_auth"); }
+    const res = await fetch(url.toString(), { headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {} });
+    if (!res.ok) throw new ApiError(`Não foi possível baixar os logs: ${res.statusText}`, res.status);
+    const blob = await res.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `genesis-logs-${asset && asset !== "ALL" ? asset : "todos"}.log`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  },
   startWorkers: (payload: { assets: string[]; strategy: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/start", payload),
   stopWorkers: (payload: { assets: string[]; strategy?: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/stop", { ...payload, strategy: payload.strategy || "" }),
 };

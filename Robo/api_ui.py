@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -217,6 +218,26 @@ def logs(
     _user: dict[str, str] = Depends(require_auth),
 ) -> list[dict[str, Any]]:
     return repository.list_ui_logs(asset=asset, limit=limit)
+
+
+@app.get("/api/ui/logs/download", response_class=PlainTextResponse)
+def download_logs(
+    asset: str | None = Query(default=None),
+    limit: int = Query(default=5000, ge=1, le=10000),
+    _user: dict[str, str] = Depends(require_auth),
+) -> PlainTextResponse:
+    rows = repository.list_ui_logs(asset=asset, limit=limit)
+    lines = [
+        f"[{row.get('ts', '')}] [{row.get('level', '')}] "
+        f"[{row.get('symbol') or 'UNKNOWN'}] "
+        f"[{row.get('strategy') or 'UNKNOWN'}] {row.get('message', '')}"
+        for row in reversed(rows)
+    ]
+    selected = (asset or "todos").strip().upper().replace("/", "-")
+    return PlainTextResponse(
+        "\n".join(lines) + ("\n" if lines else ""),
+        headers={"Content-Disposition": f'attachment; filename="genesis-logs-{selected}.log"'},
+    )
 
 
 @app.post("/api/ui/workers/start")

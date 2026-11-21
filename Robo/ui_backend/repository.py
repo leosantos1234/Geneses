@@ -191,7 +191,7 @@ def list_ui_logs(*, asset: str | None = None, limit: int = 200) -> list[dict[str
     """Return recent structured worker logs for the live Dashboard view."""
     conn = _get_conn(read_only=True)
     try:
-        safe_limit = min(max(int(limit), 1), 500)
+        safe_limit = min(max(int(limit), 1), 10000)
         clauses = []
         args: list[Any] = []
         if asset and asset.upper() != "ALL":

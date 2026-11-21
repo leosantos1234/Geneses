@@ -3,7 +3,7 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
 import { LoadingState, ErrorState } from "@/components/StateDisplays";
-import { Activity, AlertTriangle, BrainCircuit, Database, Gauge, Radio, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
+import { Activity, AlertTriangle, BrainCircuit, Database, Download, Gauge, Radio, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
 import type { ControlCenterAsset } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -79,13 +79,14 @@ function WorkerControl() {
 function LiveWorkerLogs() {
   const options = useQuery({ queryKey: ["runtime-options"], queryFn: api.runtimeOptions, refetchInterval: 5_000, retry: 1 });
   const [selectedAsset, setSelectedAsset] = useState("ALL");
+  const [downloading, setDownloading] = useState(false);
   const logs = useQuery({ queryKey: ["live-logs", selectedAsset], queryFn: () => api.logs(selectedAsset), refetchInterval: 3_000, retry: 1 });
   const activeAssets = (options.data?.workers || []).filter((worker) => worker.running).map((worker) => worker.asset.replace(/USDT$/, ""));
   const assets = [...new Set(activeAssets)];
   return <section className="rounded-lg border border-border bg-card p-4">
     <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
       <div><div className="flex items-center gap-2"><ScrollText className="h-4 w-4 text-primary" /><h2 className="text-sm font-semibold">Logs dos ativos</h2><span className="h-2 w-2 animate-pulse rounded-full bg-profit" /></div><p className="mt-1 text-xs text-muted-foreground">Atualização automática a cada 3 segundos · {activeAssets.length} worker(s) ativo(s)</p></div>
-      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">tempo real</span>
+      <div className="flex items-center gap-2"><span className="text-[10px] uppercase tracking-wider text-muted-foreground">tempo real</span><Button size="sm" variant="outline" disabled={downloading} onClick={async () => { setDownloading(true); try { await api.downloadLogs(selectedAsset); } catch (error) { window.alert(error instanceof Error ? error.message : "Não foi possível baixar os logs"); } finally { setDownloading(false); } }}><Download className="mr-1.5 h-3.5 w-3.5" />{downloading ? "Baixando..." : "Baixar log"}</Button></div>
     </div>
     <div className="mb-3 flex flex-wrap gap-2">
       {["ALL", ...assets].map((asset) => <button key={asset} type="button" onClick={() => setSelectedAsset(asset)} className={`rounded-md border px-3 py-1.5 text-xs transition-colors ${selectedAsset === asset ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>{asset === "ALL" ? "Todos" : asset}</button>)}
