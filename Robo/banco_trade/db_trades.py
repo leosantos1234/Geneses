@@ -572,6 +572,44 @@ def _ensure_postgres_operational_schema():
                 PRIMARY KEY (symbol, timeframe, candle_open_time)
             )
         """)
+        # Prospective analytical outcomes are observability-only.  Keep this
+        # additive and idempotent so older Render databases receive the same
+        # activation watermark expected by analytical_telemetry.py.
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS analytical_event_outcomes (
+                id TEXT PRIMARY KEY, event_type TEXT NOT NULL, event_id TEXT NOT NULL,
+                symbol TEXT NOT NULL, timeframe TEXT NOT NULL,
+                event_candle_open_time TIMESTAMPTZ NOT NULL, event_candle_close_time TIMESTAMPTZ,
+                direction TEXT, regime INTEGER, blocker TEXT,
+                feature_vector JSONB NOT NULL DEFAULT '{}'::jsonb,
+                forward_return_1 NUMERIC, forward_return_3 NUMERIC, forward_return_6 NUMERIC,
+                forward_return_12 NUMERIC, mfe_pct_1 NUMERIC, mae_pct_1 NUMERIC,
+                mfe_pct_3 NUMERIC, mae_pct_3 NUMERIC, mfe_pct_6 NUMERIC, mae_pct_6 NUMERIC,
+                mfe_pct_12 NUMERIC, mae_pct_12 NUMERIC,
+                forward_return_1_available_at TIMESTAMPTZ, forward_return_3_available_at TIMESTAMPTZ,
+                forward_return_6_available_at TIMESTAMPTZ, forward_return_12_available_at TIMESTAMPTZ,
+                outcome_class TEXT, available_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                UNIQUE (event_type, event_id),
+                CHECK (direction IS NULL OR upper(direction) IN ('BUY','SELL','LONG','SHORT','UNKNOWN')),
+                CHECK (outcome_class IS NULL OR outcome_class IN
+                    ('PROTECTED_CAPITAL','MISSED_OPPORTUNITY','NEUTRAL','INSUFFICIENT_DATA'))
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS analytical_event_outcomes_symbol_idx ON analytical_event_outcomes(symbol, event_candle_open_time)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS analytical_event_outcomes_blocker_idx ON analytical_event_outcomes(symbol, blocker, regime)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS analytical_event_outcomes_available_idx ON analytical_event_outcomes(available_at)")
+        cursor.execute("""
+            INSERT INTO genesis_migration_runs(migration_key, source_path, status, details)
+            VALUES (%s, %s, %s, %s::jsonb)
+            ON CONFLICT (migration_key) DO UPDATE
+            SET completed_at=NOW(), status=EXCLUDED.status, details=EXCLUDED.details
+        """, (
+            "analytical-outcomes-v3",
+            "Robo/ops/migrations/012_analytical_outcomes_v3.sql",
+            "completed",
+            '{"additive":true,"prospective_only":true,"historical_backfill":false,"commander_authority":"NONE"}',
+        ))
         cursor.execute("CREATE INDEX IF NOT EXISTS rag_records_symbol_idx ON rag_records(symbol)")
         cursor.execute("CREATE INDEX IF NOT EXISTS canonical_market_candles_1m_close_idx ON canonical_market_candles_1m(symbol, candle_close_time)")
         cursor.execute("CREATE INDEX IF NOT EXISTS analytical_candle_telemetry_close_idx ON analytical_candle_telemetry(symbol, timeframe, candle_close_time)")
