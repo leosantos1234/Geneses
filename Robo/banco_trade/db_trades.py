@@ -495,6 +495,45 @@ def _ensure_postgres_operational_schema():
             )
         """)
         cursor.execute("""
+            CREATE TABLE IF NOT EXISTS genesis_migration_runs (
+                migration_key TEXT PRIMARY KEY, source_path TEXT NOT NULL,
+                completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), status TEXT NOT NULL,
+                details JSONB NOT NULL DEFAULT '{}'::jsonb
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS commander_decisions (
+                commander_decision_id TEXT PRIMARY KEY, timestamp_utc TIMESTAMPTZ NOT NULL,
+                symbol TEXT, decision_type TEXT NOT NULL, strategy_id TEXT,
+                strategy_name TEXT, confidence TEXT, reference_price NUMERIC,
+                market_regime TEXT, commander_version TEXT NOT NULL,
+                source_context_id TEXT, decision_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+                rationale_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+                record_provenance TEXT NOT NULL DEFAULT 'UNKNOWN'
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS breakout_evaluations (
+                breakout_evaluation_id TEXT PRIMARY KEY, timestamp_utc TIMESTAMPTZ NOT NULL,
+                symbol TEXT NOT NULL, timeframe TEXT NOT NULL, regime TEXT,
+                direction_candidate TEXT, stage_results JSONB NOT NULL DEFAULT '{}'::jsonb,
+                primary_blocker TEXT, failed_stages JSONB NOT NULL DEFAULT '[]'::jsonb,
+                raw_breakout BOOLEAN NOT NULL DEFAULT FALSE, final_state TEXT NOT NULL,
+                commander_decision_id TEXT, risk_status TEXT, risk_reason TEXT,
+                risk_evaluated_at TIMESTAMPTZ, paper_order_id TEXT, paper_fill_id TEXT,
+                paper_effect_id TEXT, record_provenance TEXT NOT NULL DEFAULT 'UNKNOWN',
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), candle_open_time TIMESTAMPTZ,
+                candle_close_time TIMESTAMPTZ, candle_closed BOOLEAN, analysis_key TEXT,
+                evaluation_context JSONB NOT NULL DEFAULT '{}'::jsonb, run_id TEXT,
+                commander_invoked BOOLEAN NOT NULL DEFAULT FALSE,
+                feature_vector JSONB NOT NULL DEFAULT '{}'::jsonb,
+                breakout_timeframe TEXT, breakout_candle_open_time TIMESTAMPTZ,
+                breakout_candle_close_time TIMESTAMPTZ, breakout_candle_closed BOOLEAN,
+                canonical_regime_timeframe TEXT, canonical_regime_candle_open_time TIMESTAMPTZ,
+                canonical_regime_candle_close_time TIMESTAMPTZ
+            )
+        """)
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS mr_fsm_state (
                 symbol TEXT PRIMARY KEY, updated_at TEXT NOT NULL, state_json TEXT NOT NULL
             )
@@ -542,6 +581,11 @@ def _ensure_postgres_operational_schema():
         cursor.execute("CREATE INDEX IF NOT EXISTS log_events_ts_idx ON log_events(ts)")
         cursor.execute("CREATE INDEX IF NOT EXISTS log_events_symbol_ts_idx ON log_events(symbol, ts DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS decision_events_decision_ts_idx ON decision_events(decision_id, event_ts, event_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS commander_decisions_context_idx ON commander_decisions(source_context_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS breakout_evaluations_time_idx ON breakout_evaluations(timestamp_utc, symbol, direction_candidate)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS breakout_evaluations_blocker_idx ON breakout_evaluations(symbol, primary_blocker, timestamp_utc)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS breakout_evaluations_commander_idx ON breakout_evaluations(commander_decision_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS breakout_evaluations_1m_lineage_idx ON breakout_evaluations(symbol, breakout_timeframe, breakout_candle_open_time)")
         conn.commit()
     finally:
         conn.close()
