@@ -153,3 +153,16 @@ export interface RuntimeOptionsResponse {
   strategies: RuntimeOption[];
   workers: WorkerStatus[];
 }
+
+export interface ExchangeBalanceSnapshot {
+  exchange: string;
+  currency: string;
+  total_equity: number;
+  usdt_equity: number;
+  available_usdt: number;
+  used_in_positions: number;
+  positions_notional: number;
+  unrealized_pnl: number;
+  open_positions: { symbol?: string; side?: string; size: number; notional_usd: number; unrealized_pnl: number }[];
+  fetched_at: string;
+}

@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
 import { LoadingState, ErrorState } from "@/components/StateDisplays";
 import { Activity, AlertTriangle, BrainCircuit, Database, Download, Gauge, Radio, ScrollText, ShieldCheck, Sparkles } from "lucide-react";
-import type { ControlCenterAsset } from "@/types/api";
+import type { ControlCenterAsset, ExchangeBalanceSnapshot } from "@/types/api";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -73,6 +73,17 @@ function WorkerControl() {
       <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center"><Select disabled={!canControl} value={strategy} onValueChange={setStrategy}><SelectTrigger className="sm:w-64"><SelectValue placeholder="Estratégia" /></SelectTrigger><SelectContent>{options.data?.strategies.map((item) => <SelectItem key={item.id} value={item.id}>{item.label}</SelectItem>)}</SelectContent></Select><Button size="sm" disabled={!canControl || !selectedAssets.length || start.isPending} onClick={() => start.mutate({ assets: selectedAssets, strategy })}>{start.isPending ? "Iniciando..." : "Iniciar selecionados"}</Button><Button size="sm" variant="outline" disabled={!canControl || !selectedAssets.length || stop.isPending} onClick={() => stop.mutate({ assets: selectedAssets })}>{stop.isPending ? "Parando..." : "Parar selecionados"}</Button><span className="text-[11px] text-muted-foreground">{canControl && selectedAssets.length ? `${selectedAssets.length} selecionado(s)` : "Nenhum ativo selecionado"}</span></div>
       {canControl && <div className="mt-2 flex flex-wrap justify-end gap-2"><Button size="sm" variant="destructive" disabled={!selectedAssets.length || stop.isPending} onClick={stopSelected} title="Encerra os processos dos ativos selecionados">{stop.isPending ? "Parando..." : "Parar processo selecionado"}</Button><Button size="sm" variant="destructive" disabled={!running.length || stop.isPending} onClick={stopAll} title="Encerra todos os workers ativos">{stop.isPending ? "Parando..." : "Parar todos os workers"}</Button></div>}
     </>}
+  </section>;
+}
+
+function ExchangeBalanceCard() {
+  const { user } = useAuth();
+  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["exchange-balance"], queryFn: api.exchangeBalance, refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
+  if (user?.role !== "admin") return null;
+  const money = (value: number) => `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
+  return <section className="rounded-lg border border-primary/30 bg-card p-4">
+    <div className="mb-3 flex items-center justify-between"><div><h2 className="text-sm font-semibold">Saldo da corretora</h2><p className="mt-1 text-xs text-muted-foreground">Consulta somente leitura · atualização automática a cada 30 segundos</p></div><span className="rounded-full bg-profit/10 px-2 py-1 text-[11px] text-profit">{balance.data?.exchange || "OKX"}</span></div>
+    {balance.isLoading ? <p className="text-xs text-muted-foreground">Consultando saldo...</p> : balance.isError ? <p className="text-xs text-warning">Saldo indisponível. Verifique as credenciais OKX no serviço da API.</p> : balance.data ? <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Saldo total</div><div className="mt-1 font-mono-nums text-lg text-primary">{money(balance.data.total_equity)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Disponível</div><div className="mt-1 font-mono-nums text-lg text-profit">{money(balance.data.available_usdt)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Usado em margem</div><div className="mt-1 font-mono-nums text-lg text-warning">{money(balance.data.used_in_positions)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Posições abertas</div><div className="mt-1 font-mono-nums text-lg text-foreground">{balance.data.open_positions.length}</div><div className="text-[10px] text-muted-foreground">Notional: {money(balance.data.positions_notional)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">PnL aberto</div><div className={`mt-1 font-mono-nums text-lg ${balance.data.unrealized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{money(balance.data.unrealized_pnl)}</div></div></div> : null}
   </section>;
 }
 
@@ -161,6 +172,7 @@ export default function DashboardPage() {
   const totalBlocked = data.assets.reduce((sum, item) => sum + item.blocked, 0);
   const totalCandidates = data.assets.reduce((sum, item) => sum + item.candidates, 0);
   return <div className="space-y-5 animate-slide-in">
+    <ExchangeBalanceCard />
     <WorkerControl />
     <LiveWorkerLogsPaged />
     <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-primary"><Activity className="h-3.5 w-3.5" /> centro de controle</div><h1 className="text-2xl font-semibold tracking-tight">Genesis <span className="text-muted-foreground">/ Visão geral</span></h1><p className="mt-1 text-sm text-muted-foreground">Operação real, sombra e evidências no mesmo painel.</p></div><div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs"><span className={`h-2 w-2 rounded-full ${realOn ? "bg-profit animate-pulse" : "bg-warning"}`} /><span className={realOn ? "text-profit" : "text-warning"}>{realOn ? "REAL ATIVO" : "REAL PROTEGIDO"}</span><span className="text-muted-foreground">· {data.assets.length} ativos · atualização {formatTime(data.generated_at)}</span></div></div>

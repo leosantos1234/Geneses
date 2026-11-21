@@ -25,6 +25,16 @@ services:
         value: "true"
       - key: GENESIS_ASSET_LIST
         value: BTC,ETH,BNB,SOL,XRP,AVAX
+      - key: ACTIVE_EXCHANGE
+        value: okx
+      - key: OKX_API_KEY
+        sync: false
+      - key: OKX_API_SECRET
+        sync: false
+      - key: OKX_API_PASSPHRASE
+        sync: false
+      - key: OKX_DEMO_TRADING
+        value: "false"
 
   - type: web
     name: genesis-panel

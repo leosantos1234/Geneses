@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import threading
+import time
 from datetime import datetime
 from typing import Any
 
@@ -38,6 +40,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_BALANCE_CACHE: dict[str, Any] = {"expires_at": 0.0, "data": None}
+_BALANCE_LOCK = threading.Lock()
 
 class LoginRequest(BaseModel):
     email: str
@@ -151,6 +156,72 @@ def open_positions(
 ) -> list[dict[str, Any]]:
     rows = repository.list_open_positions(symbol=symbol, limit=limit)
     return [_normalize_trade_row(r) for r in rows]
+
+
+def _exchange_balance_snapshot() -> dict[str, Any]:
+    now = time.monotonic()
+    with _BALANCE_LOCK:
+        cached = _BALANCE_CACHE.get("data")
+        if cached and now < float(_BALANCE_CACHE.get("expires_at", 0.0)):
+            return cached
+    from exchange.factory import active_exchange_name, create_exchange_client
+
+    client = create_exchange_client()
+    wallet = client.get_wallet_balance(accountType="UNIFIED")
+    accounts = wallet.get("result", {}).get("list", [])
+    account = accounts[0] if accounts else {}
+    total_equity = float(account.get("totalEquity") or 0.0)
+    available_account = float(account.get("totalAvailableBalance") or 0.0)
+    usdt = next((coin for coin in account.get("coin", []) if str(coin.get("coin", "")).upper() == "USDT"), {})
+    usdt_equity = float(usdt.get("equity") or usdt.get("walletBalance") or 0.0)
+    available_usdt = float(usdt.get("totalAvailableBalance") or usdt.get("availableToWithdraw") or 0.0)
+
+    positions_response = client.get_positions(category="linear")
+    positions = []
+    notional = 0.0
+    unrealized_pnl = 0.0
+    for position in positions_response.get("result", {}).get("list", []):
+        try:
+            size = abs(float(position.get("pos") or position.get("size") or 0.0))
+            position_notional = abs(float(position.get("notionalUsd") or position.get("notional") or 0.0))
+            pnl = float(position.get("upl") or position.get("unrealizedPnl") or 0.0)
+        except (TypeError, ValueError):
+            continue
+        if size <= 0 and position_notional <= 0:
+            continue
+        notional += position_notional
+        unrealized_pnl += pnl
+        positions.append({
+            "symbol": position.get("symbol") or position.get("instId"),
+            "side": position.get("side"),
+            "size": size,
+            "notional_usd": position_notional,
+            "unrealized_pnl": pnl,
+        })
+
+    snapshot = {
+        "exchange": active_exchange_name().upper(),
+        "currency": "USDT",
+        "total_equity": total_equity,
+        "usdt_equity": usdt_equity,
+        "available_usdt": available_usdt or available_account,
+        "used_in_positions": max(usdt_equity - (available_usdt or available_account), 0.0),
+        "positions_notional": notional,
+        "unrealized_pnl": unrealized_pnl,
+        "open_positions": positions,
+        "fetched_at": datetime.utcnow().isoformat() + "Z",
+    }
+    with _BALANCE_LOCK:
+        _BALANCE_CACHE.update({"data": snapshot, "expires_at": time.monotonic() + 15.0})
+    return snapshot
+
+
+@app.get("/api/ui/exchange-balance")
+def exchange_balance(_user: dict[str, str] = Depends(_require_admin)) -> dict[str, Any]:
+    try:
+        return _exchange_balance_snapshot()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Saldo da corretora indisponível: {type(exc).__name__}") from exc
 
 
 @app.get("/api/ui/trades")

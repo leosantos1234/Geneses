@@ -90,6 +90,7 @@ export const api = {
 
   controlCenter: (days = 30) => request<ControlCenterResponse>("/api/ui/control-center", { days }),
   runtimeOptions: () => request<RuntimeOptionsResponse>("/api/ui/runtime-options"),
+  exchangeBalance: () => request<import("@/types/api").ExchangeBalanceSnapshot>("/api/ui/exchange-balance"),
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
   logs: (asset?: string, hours?: number, since?: string, until?: string) => request<LiveLog[]>("/api/ui/logs", { asset, hours, since, until, limit: 250 }),
   logsPage: (params: { asset?: string; hours?: number; since?: string; until?: string; before_id?: number; level?: string; category?: string }) => request<import("@/types/api").LiveLogPage>("/api/ui/logs/page", { ...params, limit: 250 }),
