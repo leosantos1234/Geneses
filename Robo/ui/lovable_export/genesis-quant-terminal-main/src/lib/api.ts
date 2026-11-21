@@ -116,6 +116,51 @@ export const api = {
     URL.revokeObjectURL(link.href);
   },
   startWorkers: (payload: { assets: string[]; strategy: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/start", payload),
+  downloadLogsPaged: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) => {
+    const raw = localStorage.getItem("genesis_quant_auth");
+    let accessToken: string | undefined;
+    try { accessToken = raw ? JSON.parse(raw)?.session?.access_token : undefined; } catch { localStorage.removeItem("genesis_quant_auth"); }
+    const headers = accessToken ? { Authorization: "Bearer " + accessToken } : {};
+    const rows: LiveLog[] = [];
+    let beforeId: number | undefined;
+    for (let pageNumber = 0; pageNumber < 100; pageNumber += 1) {
+      const url = new URL(API_BASE + "/api/ui/logs/page");
+      const params: Record<string, string | number | undefined> = {
+        asset: asset && asset !== "ALL" ? asset : undefined,
+        hours, since, until,
+        level: level && level !== "ALL" ? level : undefined,
+        category: category && category !== "ALL" ? category : undefined,
+        before_id: beforeId,
+        limit: 1000,
+      };
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
+      });
+      let res: Response;
+      try {
+        res = await fetch(url.toString(), { headers });
+      } catch (error) {
+        throw new ApiError("NÃ£o foi possÃ­vel conectar Ã  API para baixar os logs: " + (error instanceof Error ? error.message : "erro de rede"), 0);
+      }
+      if (res.status === 401) {
+        localStorage.removeItem("genesis_quant_auth");
+        window.location.assign("/auth");
+        throw new ApiError("SessÃ£o expirada ou invÃ¡lida", res.status);
+      }
+      if (!res.ok) throw new ApiError("NÃ£o foi possÃ­vel baixar os logs: " + res.statusText, res.status);
+      const page = await res.json() as { items: LiveLog[]; has_more: boolean; next_before_id?: number | null };
+      rows.push(...page.items);
+      if (!page.has_more || !page.next_before_id) break;
+      beforeId = page.next_before_id;
+    }
+    const lines = rows.reverse().map((row) => "[" + (row.ts || "") + "] [" + (row.level || "") + "] [" + (row.symbol || "UNKNOWN") + "] [" + (row.strategy || "UNKNOWN") + "] " + (row.message || ""));
+    const blob = new Blob([lines.join("\n") + (lines.length ? "\n" : "")], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "genesis-logs-" + (asset && asset !== "ALL" ? asset : "todos") + ".log";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  },
   stopWorkers: (payload: { assets: string[]; strategy?: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/stop", { ...payload, strategy: payload.strategy || "" }),
 };
 
