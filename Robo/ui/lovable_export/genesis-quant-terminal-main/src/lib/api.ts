@@ -92,6 +92,7 @@ export const api = {
   runtimeOptions: () => request<RuntimeOptionsResponse>("/api/ui/runtime-options"),
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
   logs: (asset?: string, hours?: number, since?: string, until?: string) => request<LiveLog[]>("/api/ui/logs", { asset, hours, since, until, limit: 250 }),
+  logsPage: (params: { asset?: string; hours?: number; since?: string; until?: string; before_id?: number; level?: string; category?: string }) => request<import("@/types/api").LiveLogPage>("/api/ui/logs/page", { ...params, limit: 250 }),
   downloadLogs: async (asset?: string, hours?: number, since?: string, until?: string) => {
     const url = new URL(`${API_BASE}/api/ui/logs/download`);
     url.searchParams.set("limit", "5000");

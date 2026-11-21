@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { StatCard } from "@/components/StatCard";
 import { LoadingState, ErrorState } from "@/components/StateDisplays";
@@ -102,6 +102,43 @@ function LiveWorkerLogs() {
   </section>;
 }
 
+function LiveWorkerLogsPaged() {
+  const options = useQuery({ queryKey: ["runtime-options"], queryFn: api.runtimeOptions, refetchInterval: 5_000, retry: 1 });
+  const [selectedAsset, setSelectedAsset] = useState("ALL");
+  const [selectedRange, setSelectedRange] = useState("1");
+  const [selectedLevel, setSelectedLevel] = useState("ALL");
+  const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [customSince, setCustomSince] = useState("");
+  const [customUntil, setCustomUntil] = useState("");
+  const [olderLogs, setOlderLogs] = useState<import("@/types/api").LiveLog[]>([]);
+  const [nextBeforeId, setNextBeforeId] = useState<number | null>(null);
+  const rangeHours = selectedRange === "custom" ? undefined : Number(selectedRange);
+  const enabled = selectedRange !== "custom" || Boolean(customSince && customUntil);
+  const filters = { asset: selectedAsset, hours: rangeHours, since: selectedRange === "custom" ? customSince : undefined, until: selectedRange === "custom" ? customUntil : undefined, level: selectedLevel, category: selectedCategory };
+  const logs = useQuery({ queryKey: ["live-logs-paged", selectedAsset, selectedRange, customSince, customUntil, selectedLevel, selectedCategory], queryFn: () => api.logsPage(filters), refetchInterval: 3_000, retry: 1, enabled });
+  useEffect(() => { setOlderLogs([]); setNextBeforeId(null); }, [selectedAsset, selectedRange, customSince, customUntil, selectedLevel, selectedCategory]);
+  useEffect(() => { setNextBeforeId(logs.data?.next_before_id ?? null); }, [logs.data]);
+  const activeAssets = (options.data?.workers || []).filter((worker) => worker.running).map((worker) => worker.asset.replace(/USDT$/, ""));
+  const assets = [...new Set(activeAssets)];
+  const allLogs = [...(logs.data?.items || []), ...olderLogs];
+  const loadMore = async () => {
+    if (!nextBeforeId) return;
+    const page = await api.logsPage({ ...filters, before_id: nextBeforeId });
+    setOlderLogs((current) => [...current, ...page.items]);
+    setNextBeforeId(page.next_before_id);
+  };
+  return <section className="rounded-lg border border-border bg-card p-4">
+    <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
+      <div><div className="flex items-center gap-2"><ScrollText className="h-4 w-4 text-primary" /><h2 className="text-sm font-semibold">Logs dos ativos</h2><span className="h-2 w-2 animate-pulse rounded-full bg-profit" /></div><p className="mt-1 text-xs text-muted-foreground">Atualização automática a cada 3 segundos · {activeAssets.length} worker(s) ativo(s)</p></div>
+      <div className="flex flex-wrap items-center gap-2"><Select value={selectedRange} onValueChange={setSelectedRange}><SelectTrigger className="h-8 w-44 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0.25">Ao vivo</SelectItem><SelectItem value="1">Última hora</SelectItem><SelectItem value="4">Últimas 4 horas</SelectItem><SelectItem value="24">Últimas 24 horas</SelectItem><SelectItem value="48">Últimos 2 dias</SelectItem><SelectItem value="168">Últimos 7 dias</SelectItem><SelectItem value="720">Últimos 30 dias</SelectItem><SelectItem value="custom">Personalizado</SelectItem></SelectContent></Select><Select value={selectedLevel} onValueChange={setSelectedLevel}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os níveis</SelectItem><SelectItem value="INFO">Informações</SelectItem><SelectItem value="WARNING">Avisos</SelectItem><SelectItem value="ERROR">Erros</SelectItem></SelectContent></Select><Select value={selectedCategory} onValueChange={setSelectedCategory}><SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ALL">Todos os eventos</SelectItem><SelectItem value="errors">Erros</SelectItem><SelectItem value="orders">Ordens</SelectItem><SelectItem value="restarts">Reinícios</SelectItem></SelectContent></Select></div>
+    </div>
+    {selectedRange === "custom" && <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><label>De <input type="datetime-local" value={customSince} onChange={(event) => setCustomSince(event.target.value)} className="ml-1 rounded border border-border bg-background px-2 py-1 text-foreground" /></label><label>Até <input type="datetime-local" value={customUntil} onChange={(event) => setCustomUntil(event.target.value)} className="ml-1 rounded border border-border bg-background px-2 py-1 text-foreground" /></label></div>}
+    <div className="mb-3 flex flex-wrap gap-2">{["ALL", ...assets].map((asset) => <button key={asset} type="button" onClick={() => setSelectedAsset(asset)} className={`rounded-md border px-3 py-1.5 text-xs transition-colors ${selectedAsset === asset ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>{asset === "ALL" ? "Todos" : asset}</button>)}</div>
+    <div className="max-h-72 overflow-auto rounded-md border border-border/60 bg-background/40 p-2 font-mono-nums text-[11px]">{logs.isLoading ? <p className="p-3 text-muted-foreground">Carregando eventos...</p> : logs.isError ? <p className="p-3 text-warning">Não foi possível carregar os logs.</p> : allLogs.length ? allLogs.map((item) => <div key={item.id} className="flex gap-2 border-b border-border/40 py-1.5 last:border-0"><span className="shrink-0 text-muted-foreground">{formatTime(item.ts)}</span><span className={`shrink-0 ${item.level === "ERROR" ? "text-loss" : item.level === "WARNING" ? "text-warning" : "text-primary"}`}>{item.level}</span><span className="shrink-0 font-semibold text-primary">{shortSymbol(item.symbol || selectedAsset)}</span><span className="min-w-0 truncate text-foreground/80">{item.message}</span></div>) : <p className="p-3 text-muted-foreground">Nenhum evento para este filtro.</p>}</div>
+    <div className="mt-2 flex items-center justify-between"><span className="text-[11px] text-muted-foreground">Exibindo {allLogs.length} registros carregados. O banco mantém até 7 dias.</span>{nextBeforeId && <Button size="sm" variant="outline" onClick={loadMore}>Carregar logs anteriores</Button>}</div>
+  </section>;
+}
+
 export default function DashboardPage() {
   const query = useQuery({ queryKey: ["control-center", 30], queryFn: () => api.controlCenter(30), refetchInterval: 30_000, retry: 1 });
   if (query.isLoading) return <LoadingState message="Conectando ao Centro de Controle..." />;
@@ -114,7 +151,7 @@ export default function DashboardPage() {
   const totalCandidates = data.assets.reduce((sum, item) => sum + item.candidates, 0);
   return <div className="space-y-5 animate-slide-in">
     <WorkerControl />
-    <LiveWorkerLogs />
+    <LiveWorkerLogsPaged />
     <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-primary"><Activity className="h-3.5 w-3.5" /> centro de controle</div><h1 className="text-2xl font-semibold tracking-tight">Genesis <span className="text-muted-foreground">/ Visão geral</span></h1><p className="mt-1 text-sm text-muted-foreground">Operação real, sombra e evidências no mesmo painel.</p></div><div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-xs"><span className={`h-2 w-2 rounded-full ${realOn ? "bg-profit animate-pulse" : "bg-warning"}`} /><span className={realOn ? "text-profit" : "text-warning"}>{realOn ? "REAL ATIVO" : "REAL PROTEGIDO"}</span><span className="text-muted-foreground">· {data.assets.length} ativos · atualização {formatTime(data.generated_at)}</span></div></div>
     <div className="grid grid-cols-2 gap-3 xl:grid-cols-4"><StatCard title="Banco operacional" value={databaseOk ? "PostgreSQL" : "indisponível"} subtitle={String(runtime.environment || "local")} icon={<Database className="h-4 w-4" />} trend={databaseOk ? "up" : "down"} /><StatCard title="Breakouts observados" value={data.assets.reduce((sum, item) => sum + item.raw_breakouts, 0)} subtitle={`janela móvel de ${data.window_days} dias`} icon={<Gauge className="h-4 w-4" />} /><StatCard title="Candidatos reais" value={totalCandidates} subtitle={`${totalBlocked} avaliações bloqueadas`} icon={<ShieldCheck className="h-4 w-4" />} trend={totalCandidates ? "up" : "neutral"} /><StatCard title="Sombra" value={data.shadow.events} subtitle={`${data.shadow.divergences} divergências · ${data.shadow.paper_trades} trades papel`} icon={<BrainCircuit className="h-4 w-4" />} /></div>
     <div className="grid gap-4 xl:grid-cols-[1.45fr_0.9fr]"><section className="rounded-lg border border-border bg-card p-4"><div className="mb-2 flex items-start justify-between"><div><h2 className="text-sm font-semibold">Mapa de regimes por ativo</h2><p className="mt-1 text-xs text-muted-foreground">Leitura mais recente registrada pelo runtime.</p></div><Radio className="h-4 w-4 text-primary" /></div><div className="grid grid-cols-[1.1fr_1.5fr_0.8fr_0.8fr_0.8fr] gap-3 border-b border-border py-2 text-[10px] uppercase tracking-wider text-muted-foreground"><span>Ativo</span><span>Regime</span><span>Romp.</span><span>Bloq.</span><span className="text-right">Conversão</span></div><div>{data.assets.map((asset) => <AssetRow key={asset.symbol} asset={asset} />)}</div></section><section className="rounded-lg border border-border bg-card p-4"><div className="mb-3 flex items-start justify-between"><div><h2 className="text-sm font-semibold">Guardião de promoção</h2><p className="mt-1 text-xs text-muted-foreground">O modo sombra não altera a operação real.</p></div><ShieldCheck className="h-4 w-4 text-profit" /></div><div className="space-y-2 text-xs"><div className="flex items-center justify-between rounded-md bg-profit/10 p-3"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-profit" />Campeão real</span><span className="font-mono-nums text-profit">protegido</span></div><div className="flex items-center justify-between rounded-md bg-primary/10 p-3"><span className="flex items-center gap-2"><Sparkles className="h-3.5 w-3.5 text-primary" />Variantes sombra</span><span className="font-mono-nums text-primary">{data.shadow.policies.length || "—"} ativas</span></div><div className="flex items-center justify-between rounded-md border border-border p-3"><span className="text-muted-foreground">Resultado sombra</span><span className={data.shadow.pnl >= 0 ? "font-mono-nums text-profit" : "font-mono-nums text-loss"}>{data.shadow.pnl >= 0 ? "+" : ""}{data.shadow.pnl.toFixed(2)} R</span></div><div className="flex items-center justify-between rounded-md border border-border p-3"><span className="text-muted-foreground">Critério</span><span className="text-right font-mono-nums text-[11px]">amostra + OOS + drawdown</span></div></div></section></div>

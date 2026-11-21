@@ -222,6 +222,71 @@ def list_ui_logs(*, asset: str | None = None, limit: int = 200, hours: float | N
         conn.close()
 
 
+def list_ui_logs_page(
+    *,
+    asset: str | None = None,
+    limit: int = 250,
+    hours: float | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    before_id: int | None = None,
+    level: str | None = None,
+    category: str | None = None,
+) -> dict[str, Any]:
+    """Read-only, cursor-paginated log query for operational diagnostics."""
+    conn = _get_conn(read_only=True)
+    try:
+        safe_limit = min(max(int(limit), 1), 1000)
+        clauses: list[str] = []
+        args: list[Any] = []
+        if asset and asset.upper() != "ALL":
+            symbol = asset.strip().upper()
+            symbol = symbol if symbol.endswith("USDT") else f"{symbol}USDT"
+            clauses.append("symbol = ?")
+            args.append(symbol)
+        if hours is not None:
+            since = (datetime.utcnow() - timedelta(hours=max(float(hours), 0.01))).isoformat()
+        if since:
+            clauses.append("ts >= ?")
+            args.append(since)
+        if until:
+            clauses.append("ts <= ?")
+            args.append(until)
+        if before_id is not None:
+            clauses.append("id < ?")
+            args.append(int(before_id))
+        if level and level.upper() != "ALL":
+            clauses.append("level = ?")
+            args.append(level.upper())
+
+        category_sql = {
+            "errors": "(level = 'ERROR' OR LOWER(message) LIKE '%error%' OR LOWER(message) LIKE '%exception%' OR LOWER(message) LIKE '%traceback%')",
+            "orders": "(LOWER(message) LIKE '%ordem%' OR LOWER(message) LIKE '%order%' OR LOWER(message) LIKE '%filled%' OR LOWER(message) LIKE '%create_order%' OR LOWER(message) LIKE '%execu%')",
+            "restarts": "(LOWER(message) LIKE '%worker iniciado%' OR LOWER(message) LIKE '%worker encerrado%' OR LOWER(message) LIKE '%restarted%' OR LOWER(message) LIKE '%instance failed%' OR LOWER(message) LIKE '%restart%')",
+        }
+        if category and category.lower() in category_sql:
+            clauses.append(category_sql[category.lower()])
+
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        rows = _execute(
+            conn,
+            f"""SELECT id, ts, level, logger, strategy, symbol, message
+                FROM log_events {where}
+                ORDER BY id DESC LIMIT {safe_limit + 1}""",
+            args,
+        ).fetchall()
+        items = [dict(row) for row in rows[:safe_limit]]
+        has_more = len(rows) > safe_limit
+        return {
+            "items": items,
+            "has_more": has_more,
+            "next_before_id": items[-1]["id"] if has_more and items else None,
+            "limit": safe_limit,
+        }
+    finally:
+        conn.close()
+
+
 def append_ui_log(*, asset: str, strategy: str | None, message: str, level: str = "INFO") -> None:
     """Persist one stdout/stderr line forwarded by the Render dispatcher."""
     conn = _get_conn()

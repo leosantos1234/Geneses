@@ -223,6 +223,30 @@ def logs(
     return repository.list_ui_logs(asset=asset, limit=limit, hours=hours, since=since, until=until)
 
 
+@app.get("/api/ui/logs/page")
+def logs_page(
+    asset: str | None = Query(default=None),
+    limit: int = Query(default=250, ge=1, le=1000),
+    hours: float | None = Query(default=None, gt=0, le=720),
+    since: str | None = Query(default=None),
+    until: str | None = Query(default=None),
+    before_id: int | None = Query(default=None, ge=1),
+    level: str | None = Query(default=None),
+    category: str | None = Query(default=None),
+    _user: dict[str, str] = Depends(require_auth),
+) -> dict[str, Any]:
+    return repository.list_ui_logs_page(
+        asset=asset,
+        limit=limit,
+        hours=hours,
+        since=since,
+        until=until,
+        before_id=before_id,
+        level=level,
+        category=category,
+    )
+
+
 @app.get("/api/ui/logs/download", response_class=PlainTextResponse)
 def download_logs(
     asset: str | None = Query(default=None),

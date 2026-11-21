@@ -141,6 +141,13 @@ export interface LiveLog {
   message: string;
 }
 
+export interface LiveLogPage {
+  items: LiveLog[];
+  has_more: boolean;
+  next_before_id: number | null;
+  limit: number;
+}
+
 export interface RuntimeOptionsResponse {
   assets: RuntimeOption[];
   strategies: RuntimeOption[];
