@@ -144,7 +144,7 @@ function LiveWorkerLogsPaged() {
   const downloadLogs = async () => {
     setDownloading(true);
     try {
-      await api.downloadLogsPaged(selectedAsset, rangeHours, selectedRange === "custom" ? customSince : undefined, selectedRange === "custom" ? customUntil : undefined, selectedLevel, selectedCategory);
+      await api.downloadLogs(selectedAsset, rangeHours, selectedRange === "custom" ? customSince : undefined, selectedRange === "custom" ? customUntil : undefined, selectedLevel, selectedCategory);
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Não foi possível baixar os logs");
     } finally {
