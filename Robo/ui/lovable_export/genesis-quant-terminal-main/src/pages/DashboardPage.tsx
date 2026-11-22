@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const regimeTone: Record<string, string> = { "Tendência forte": "text-profit bg-profit/10", "Tendência moderada": "text-primary bg-primary/10", Lateral: "text-warning bg-warning/10", Caótico: "text-loss bg-loss/10", "Sem leitura": "text-muted-foreground bg-muted" };
 const shortSymbol = (symbol: string) => symbol.replace("USDT", "");
@@ -33,7 +34,7 @@ function AssetRow({ asset }: { asset: ControlCenterAsset }) {
   </div>;
 }
 
-function WorkerControl() {
+export function WorkerControl() {
   const { user } = useAuth();
   const canControl = user?.role === "admin";
   const client = useQueryClient();
@@ -75,6 +76,17 @@ function WorkerControl() {
   </section>;
 }
 
+function ActiveWorkersSummary() {
+  const options = useQuery({ queryKey: ["runtime-options"], queryFn: api.runtimeOptions, refetchInterval: 15_000, retry: 1 });
+  const running = options.data?.workers.filter((worker) => worker.running) || [];
+  return <section className="rounded-lg border border-border bg-card px-4 py-3">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-2 text-xs"><span className={`h-2 w-2 shrink-0 rounded-full ${running.length ? "bg-profit animate-pulse" : "bg-muted-foreground"}`} /><span className="font-medium">Ativos rodando:</span><span className="truncate text-muted-foreground">{options.isLoading ? "consultando..." : running.length ? running.map((worker) => `${worker.asset} · ${strategyLabels[worker.strategy || ""] || worker.strategy || "estratégia"}`).join(" | ") : "nenhum worker ativo"}</span></div>
+      <Link to="/execution" className="shrink-0 text-xs font-medium text-primary hover:underline">Gerenciar execução →</Link>
+    </div>
+  </section>;
+}
+
 function ExchangeBalanceCard() {
   const { user } = useAuth();
   const [periodDays, setPeriodDays] = useState(7);
@@ -85,6 +97,24 @@ function ExchangeBalanceCard() {
   return <section className="rounded-lg border border-primary/30 bg-card p-4">
     <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-start"><div><h2 className="text-sm font-semibold">Portfólio da corretora</h2><p className="mt-1 text-xs text-muted-foreground">Valor estimado em USD · consulta somente leitura · atualização a cada 30 segundos</p></div><div className="flex items-center gap-2"><Select value={String(periodDays)} onValueChange={(value) => setPeriodDays(Number(value))}><SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1">Últimas 24 horas</SelectItem><SelectItem value="7">Últimos 7 dias</SelectItem><SelectItem value="30">Últimos 30 dias</SelectItem><SelectItem value="90">Últimos 90 dias</SelectItem><SelectItem value="365">Último ano</SelectItem><SelectItem value="3650">Todo o histórico</SelectItem></SelectContent></Select><span className="rounded-full bg-profit/10 px-2 py-1 text-[11px] text-profit">{balance.data?.exchange || "OKX"}</span></div></div>
     {balance.isLoading ? <p className="text-xs text-muted-foreground">Consultando saldo...</p> : balance.isError ? <p className="text-xs text-warning">Saldo indisponível. Verifique as credenciais OKX no serviço da API.</p> : balance.data ? <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6"><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Valor total estimado</div><div className="mt-1 font-mono-nums text-lg text-primary">{money(balance.data.total_equity)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Portfólio / Funding</div><div className="mt-1 font-mono-nums text-lg text-profit">{money(balance.data.funding_balance)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Em negociação</div><div className="mt-1 font-mono-nums text-lg text-primary">{money(balance.data.trading_equity)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Ganho/perda ({periodLabel})</div><div className={`mt-1 font-mono-nums text-lg ${balance.data.realized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{balance.data.realized_pnl >= 0 ? "+" : ""}{money(balance.data.realized_pnl)}</div><div className="text-[10px] text-muted-foreground">{balance.data.period_trades} trade(s) fechado(s)</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Usado em margem</div><div className="mt-1 font-mono-nums text-lg text-warning">{money(balance.data.used_in_positions)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">PnL aberto</div><div className={`mt-1 font-mono-nums text-lg ${balance.data.unrealized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{money(balance.data.unrealized_pnl)}</div><div className="text-[10px] text-muted-foreground">Posições: {balance.data.open_positions.length}</div></div></div> : null}
+  </section>;
+}
+
+function PerformanceRanking() {
+  const { user } = useAuth();
+  const [periodDays, setPeriodDays] = useState(7);
+  const performance = useQuery({ queryKey: ["performance-breakdown", periodDays], queryFn: () => api.performanceBreakdown(periodDays), refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
+  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["performance-balance", periodDays], queryFn: () => api.exchangeBalance(periodDays), refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
+  if (user?.role !== "admin") return null;
+  const periodLabel = periodDays === 1 ? "24h" : periodDays === 3650 ? "histórico" : `${periodDays}d`;
+  const rows = performance.data?.rows || [];
+  const money = (value: number) => `${value >= 0 ? "+" : ""}${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
+  return <section className="rounded-lg border border-border bg-card p-4">
+    <div className="mb-3 flex flex-col justify-between gap-2 sm:flex-row sm:items-start"><div><h2 className="text-sm font-semibold">Desempenho por ativo e estratégia</h2><p className="mt-1 text-xs text-muted-foreground">Ranking recalculado pelo período selecionado · resultados realizados e posições abertas separados.</p></div><Select value={String(periodDays)} onValueChange={(value) => setPeriodDays(Number(value))}><SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="1">Últimas 24 horas</SelectItem><SelectItem value="7">Últimos 7 dias</SelectItem><SelectItem value="30">Últimos 30 dias</SelectItem><SelectItem value="90">Últimos 90 dias</SelectItem><SelectItem value="365">Último ano</SelectItem><SelectItem value="3650">Todo o histórico</SelectItem></SelectContent></Select></div>
+    {performance.isLoading ? <p className="text-xs text-muted-foreground">Calculando desempenho...</p> : performance.isError ? <p className="text-xs text-warning">Não foi possível calcular o ranking deste período.</p> : <>
+      <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5"><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">PnL realizado</div><div className={`mt-1 font-mono-nums text-base ${performance.data?.total_pnl && performance.data.total_pnl < 0 ? "text-loss" : "text-profit"}`}>{money(performance.data?.total_pnl || 0)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">PnL aberto</div><div className={`mt-1 font-mono-nums text-base ${(balance.data?.unrealized_pnl || 0) < 0 ? "text-loss" : "text-profit"}`}>{money(balance.data?.unrealized_pnl || 0)}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Trades</div><div className="mt-1 font-mono-nums text-base">{performance.data?.total_trades || 0}</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Acerto</div><div className="mt-1 font-mono-nums text-base">{(performance.data?.win_rate_pct || 0).toFixed(2)}%</div></div><div className="rounded-md border border-border p-3"><div className="text-[10px] uppercase text-muted-foreground">Período</div><div className="mt-1 font-mono-nums text-base">{periodLabel}</div></div></div>
+      {rows.length ? <div className="overflow-x-auto rounded-md border border-border"><table className="w-full text-xs"><thead><tr className="border-b border-border bg-muted/40 text-left uppercase tracking-wider text-muted-foreground"><th className="px-3 py-2">Ativo</th><th className="px-3 py-2">Estratégia</th><th className="px-3 py-2">PnL</th><th className="px-3 py-2">Retorno</th><th className="px-3 py-2">Trades</th><th className="px-3 py-2">Acerto</th><th className="px-3 py-2">Drawdown</th></tr></thead><tbody>{rows.map((row) => <tr key={`${row.symbol}-${row.strategy}`} className="border-b border-border/50 last:border-0"><td className="px-3 py-2 font-mono-nums font-semibold">{row.symbol.replace("USDT", "")}</td><td className="px-3 py-2">{strategyLabels[row.strategy] || row.strategy}</td><td className={`px-3 py-2 font-mono-nums ${row.pnl >= 0 ? "text-profit" : "text-loss"}`}>{money(row.pnl)}</td><td className={`px-3 py-2 font-mono-nums ${row.return_pct >= 0 ? "text-profit" : "text-loss"}`}>{row.return_pct >= 0 ? "+" : ""}{row.return_pct.toFixed(2)}%</td><td className="px-3 py-2 font-mono-nums">{row.trades}</td><td className="px-3 py-2 font-mono-nums">{row.win_rate_pct.toFixed(1)}%</td><td className="px-3 py-2 font-mono-nums text-loss">{row.max_drawdown_pct.toFixed(2)}%</td></tr>)}</tbody></table></div> : <div className="rounded-md border border-dashed border-border p-5 text-center text-xs text-muted-foreground">Ainda não há trades fechados suficientes neste período para montar o ranking.</div>}
+    </>}
   </section>;
 }
 
@@ -177,18 +207,10 @@ function LiveWorkerLogsPaged() {
 }
 
 export default function DashboardPage() {
-  const query = useQuery({ queryKey: ["control-center", 30], queryFn: () => api.controlCenter(30), refetchInterval: 30_000, retry: 1 });
-  if (query.isLoading) return <LoadingState message="Conectando ao Centro de Controle..." />;
-  if (query.isError) return <ErrorState message="Não foi possível carregar a telemetria do Centro de Controle." onRetry={() => query.refetch()} />;
-  const data = query.data!;
-  const runtime = data.runtime;
-  const realOn = Boolean(runtime.live_trading_enabled) && Boolean(runtime.exchange_write_gate);
-  const databaseOk = runtime.database_backend === "postgres";
-  const totalBlocked = data.assets.reduce((sum, item) => sum + item.blocked, 0);
-  const totalCandidates = data.assets.reduce((sum, item) => sum + item.candidates, 0);
   return <div className="space-y-5 animate-slide-in">
     <ExchangeBalanceCard />
-    <WorkerControl />
+    <PerformanceRanking />
+    <ActiveWorkersSummary />
     <LiveWorkerLogsPaged />
   </div>;
   /* Centro de Controle removido da tela principal; bloco preservado abaixo para possível uso futuro.

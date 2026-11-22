@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   TrendingUp,
+  PlayCircle,
   History,
   Activity,
   Users,
@@ -17,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Execução", url: "/execution", icon: PlayCircle },
   { title: "Posicoes", url: "/positions", icon: TrendingUp },
   { title: "Trades", url: "/trades", icon: History },
 ];

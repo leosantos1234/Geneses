@@ -92,6 +92,7 @@ export const api = {
   runtimeOptions: () => request<RuntimeOptionsResponse>("/api/ui/runtime-options"),
   exchangeBalance: (days = 7) => request<import("@/types/api").ExchangeBalanceSnapshot>("/api/ui/exchange-balance", { days }),
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
+  performanceBreakdown: (days = 7) => request<import("@/types/api").PerformanceBreakdownResponse>("/api/ui/performance-breakdown", { days }),
   logs: (asset?: string, hours?: number, since?: string, until?: string) => request<LiveLog[]>("/api/ui/logs", { asset, hours, since, until, limit: 250 }),
   logsPage: (params: { asset?: string; hours?: number; since?: string; until?: string; before_id?: number; level?: string; category?: string }) => request<import("@/types/api").LiveLogPage>("/api/ui/logs/page", { ...params, limit: 250 }),
   downloadLogsLegacy: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) => {

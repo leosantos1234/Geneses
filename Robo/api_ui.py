@@ -148,6 +148,14 @@ def summary(
     }
 
 
+@app.get("/api/ui/performance-breakdown")
+def performance_breakdown(
+    days: int = Query(default=7, ge=1, le=3650),
+    _user: dict[str, str] = Depends(require_auth),
+) -> dict[str, Any]:
+    return repository.get_performance_breakdown(days=days)
+
+
 @app.get("/api/ui/open-positions")
 def open_positions(
     symbol: str | None = Query(default=None),

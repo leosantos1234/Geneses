@@ -173,3 +173,24 @@ export interface ExchangeBalanceSnapshot {
   open_positions: { symbol?: string; side?: string; size: number; entry_price?: number; current_price?: number; leverage?: number; notional_usd: number; unrealized_pnl: number; unrealized_pnl_pct?: number }[];
   fetched_at: string;
 }
+
+export interface PerformanceBreakdownRow {
+  symbol: string;
+  strategy: string;
+  pnl: number;
+  return_pct: number;
+  trades: number;
+  win_rate_pct: number;
+  max_drawdown: number;
+  max_drawdown_pct: number;
+  sample_status: "amostra_pequena" | "avaliavel";
+}
+
+export interface PerformanceBreakdownResponse {
+  period_days: number;
+  rows: PerformanceBreakdownRow[];
+  total_pnl: number;
+  total_trades: number;
+  win_rate_pct: number;
+  generated_at: string;
+}

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AppLayout } from "@/components/AppLayout";
 import DashboardPage from "@/pages/DashboardPage";
+import ExecutionPage from "@/pages/ExecutionPage";
 import PositionsPage from "@/pages/PositionsPage";
 import TradesPage from "@/pages/TradesPage";
 import TradeDetailPage from "@/pages/TradeDetailPage";
@@ -40,6 +41,7 @@ const App = () => (
                     <Routes>
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<DashboardPage />} />
+                      <Route path="/execution" element={<ExecutionPage />} />
                       <Route path="/positions" element={<PositionsPage />} />
                       <Route path="/trades" element={<TradesPage />} />
                       <Route path="/trades/:tradeId" element={<TradeDetailPage />} />

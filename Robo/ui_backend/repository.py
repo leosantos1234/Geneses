@@ -375,6 +375,70 @@ def get_summary(days: int = 7, symbol: str | None = None) -> dict[str, Any]:
         conn.close()
 
 
+def get_performance_breakdown(days: int = 7) -> dict[str, Any]:
+    """Aggregate closed-trade performance by asset and strategy for the UI."""
+    conn = _get_conn(read_only=True)
+    try:
+        since = _iso_since(days)
+        rows = _execute(
+            conn,
+            """SELECT timestamp, symbol, strategy, entry_price, quantity, profit_loss
+               FROM trades
+               WHERE timestamp >= ? AND status = 'fechado' AND profit_loss IS NOT NULL
+               ORDER BY timestamp ASC""",
+            [since],
+        ).fetchall()
+        groups: dict[tuple[str, str], dict[str, Any]] = {}
+        for row in rows:
+            item = dict(row)
+            symbol = str(item.get("symbol") or "UNKNOWN").upper()
+            strategy = str(item.get("strategy") or "SEM_ESTRATEGIA").strip().upper()
+            key = (symbol, strategy)
+            group = groups.setdefault(key, {"symbol": symbol, "strategy": strategy, "pnl": 0.0, "trades": 0, "wins": 0, "capital": 0.0, "curve": []})
+            pnl = float(item.get("profit_loss") or 0.0)
+            group["pnl"] += pnl
+            group["trades"] += 1
+            group["wins"] += int(pnl > 0)
+            entry = abs(float(item.get("entry_price") or 0.0))
+            quantity = abs(float(item.get("quantity") or 0.0))
+            group["capital"] += entry * quantity if entry and quantity else entry
+            group["curve"].append(group["pnl"])
+
+        result = []
+        for group in groups.values():
+            peak = 0.0
+            max_drawdown = 0.0
+            for value in group.pop("curve"):
+                peak = max(peak, value)
+                max_drawdown = min(max_drawdown, value - peak)
+            trades = group["trades"]
+            result.append({
+                "symbol": group["symbol"],
+                "strategy": group["strategy"],
+                "pnl": round(group["pnl"], 8),
+                "return_pct": round((group["pnl"] / group["capital"] * 100.0) if group["capital"] else 0.0, 4),
+                "trades": trades,
+                "win_rate_pct": round(group["wins"] / trades * 100.0, 2) if trades else 0.0,
+                "max_drawdown": round(max_drawdown, 8),
+                "max_drawdown_pct": round((max_drawdown / group["capital"] * 100.0) if group["capital"] else 0.0, 4),
+                "sample_status": "amostra_pequena" if trades < 5 else "avaliavel",
+            })
+        result.sort(key=lambda item: (item["return_pct"], item["pnl"]), reverse=True)
+        total_pnl = sum(item["pnl"] for item in result)
+        total_trades = sum(item["trades"] for item in result)
+        total_wins = sum(round(item["trades"] * item["win_rate_pct"] / 100.0) for item in result)
+        return {
+            "period_days": days,
+            "rows": result,
+            "total_pnl": round(total_pnl, 8),
+            "total_trades": total_trades,
+            "win_rate_pct": round(total_wins / total_trades * 100.0, 2) if total_trades else 0.0,
+            "generated_at": datetime.utcnow().isoformat() + "Z",
+        }
+    finally:
+        conn.close()
+
+
 def list_open_positions(symbol: str | None = None, limit: int = 100, *, read_only: bool = False) -> list[dict[str, Any]]:
     conn = _get_conn(read_only=read_only)
     try:
