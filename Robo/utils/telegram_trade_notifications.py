@@ -19,6 +19,11 @@ def _api_url(method: str) -> str | None:
     return f"https://api.telegram.org/bot{token}/{method}" if token else None
 
 
+def _panel_url(path: str) -> str:
+    base = os.getenv("GENESIS_PANEL_URL", "https://genesis-panel.onrender.com").rstrip("/")
+    return f"{base}/{path.lstrip('/')}"
+
+
 def _brl_rate() -> float | None:
     configured = os.getenv("USDT_BRL_RATE", "").strip()
     if configured:
@@ -82,7 +87,8 @@ def notify_swing_entry(symbol: str, side: str, entry: float, stop: float, target
         caption = (f"📈 ENTRADA SWING\nAtivo: {symbol}\nLado: {side.upper()}\n"
                    f"Entrada: {entry:.6f}\nQuantidade: {quantity}\nStop: {stop:.6f}\n"
                    f"Alvo: {target:.6f}\nTrailing: {trailing:.6f}\n"
-                   f"Ordem: {order_id or 'n/d'}")
+                   f"Ordem: {order_id or 'n/d'}\n"
+                   f"Ver posição: {_panel_url('positions')}")
         _send_photo(buffer.getvalue(), caption)
     except Exception as exc:
         logger.warning("[TELEGRAM] falha ao montar grafico de entrada: %s", type(exc).__name__)
@@ -101,6 +107,8 @@ def notify_swing_exit(symbol: str, side: str, entry: float, exit_price: float,
                    f"Resultado: {pnl_usdt:+.4f} USDT")
         message += f"\nResultado em BRL: {pnl_brl:+.2f}" if pnl_brl is not None else "\nResultado em BRL: cotação indisponível"
         message += f"\nMotivo: {reason}\nOrdem: {order_id or 'n/d'}"
+        if order_id:
+            message += f"\nVer detalhe: {_panel_url(f'trades/{order_id}')}"
         from .utils_telegram import send_telegram_message
         send_telegram_message(message)
     except Exception as exc:

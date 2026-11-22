@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   TrendingUp,
   History,
-  Shield,
   Activity,
   Users,
   Menu,
@@ -20,7 +19,6 @@ const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Posicoes", url: "/positions", icon: TrendingUp },
   { title: "Trades", url: "/trades", icon: History },
-  { title: "Risco", url: "/settings/risk", icon: Shield },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

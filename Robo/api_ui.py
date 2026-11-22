@@ -203,8 +203,12 @@ def _exchange_balance_snapshot(days: int = 7) -> dict[str, Any]:
             "symbol": position.get("symbol") or position.get("instId"),
             "side": position.get("side"),
             "size": size,
+            "entry_price": float(position.get("avgPrice") or position.get("avgEntryPrice") or position.get("entryPrice") or 0.0),
+            "current_price": float(position.get("markPrice") or position.get("markPx") or position.get("lastPrice") or 0.0),
+            "leverage": float(position.get("leverage") or position.get("lever") or 0.0),
             "notional_usd": position_notional,
             "unrealized_pnl": pnl,
+            "unrealized_pnl_pct": float(position.get("uplRatio") or 0.0) * 100.0,
         })
 
     history = repository.get_summary(days=days)

@@ -2063,6 +2063,8 @@ def executar_ordem_dinamica(
         f"Score sentimento: {sentiment_score}\n"
         f"HorÃ¡rio: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
     )
+    panel_url = os.getenv("GENESIS_PANEL_URL", "https://genesis-panel.onrender.com").rstrip("/")
+    mensagem += f"\nVer posição ao vivo: {panel_url}/positions"
     try:
         send_telegram_message(mensagem)
     except Exception as e:

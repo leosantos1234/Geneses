@@ -94,7 +94,7 @@ export const api = {
   workers: () => request<WorkerStatus[]>("/api/ui/workers"),
   logs: (asset?: string, hours?: number, since?: string, until?: string) => request<LiveLog[]>("/api/ui/logs", { asset, hours, since, until, limit: 250 }),
   logsPage: (params: { asset?: string; hours?: number; since?: string; until?: string; before_id?: number; level?: string; category?: string }) => request<import("@/types/api").LiveLogPage>("/api/ui/logs/page", { ...params, limit: 250 }),
-  downloadLogs: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) => {
+  downloadLogsLegacy: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) => {
     const url = new URL(`${API_BASE}/api/ui/logs/download`);
     url.searchParams.set("limit", "100000");
     if (asset && asset !== "ALL") url.searchParams.set("asset", asset);
@@ -169,6 +169,8 @@ export const api = {
     link.click();
     window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   },
+  downloadLogs: async (asset?: string, hours?: number, since?: string, until?: string, level?: string, category?: string) =>
+    api.downloadLogsPaged(asset, hours, since, until, level, category),
   stopWorkers: (payload: { assets: string[]; strategy?: string }) => requestJson<{ workers: WorkerStatus[] }>("/api/ui/workers/stop", { ...payload, strategy: payload.strategy || "" }),
 };
 

@@ -75,7 +75,10 @@ export interface Position {
   stop_loss?: number;
   take_profit?: number;
   quantity?: number;
+  leverage?: number;
+  notional_usd?: number;
   unrealized_pnl?: number;
+  unrealized_pnl_pct?: number;
   strategy: string;
   status: string;
 }
@@ -167,6 +170,6 @@ export interface ExchangeBalanceSnapshot {
   period_days: number;
   realized_pnl: number;
   period_trades: number;
-  open_positions: { symbol?: string; side?: string; size: number; notional_usd: number; unrealized_pnl: number }[];
+  open_positions: { symbol?: string; side?: string; size: number; entry_price?: number; current_price?: number; leverage?: number; notional_usd: number; unrealized_pnl: number; unrealized_pnl_pct?: number }[];
   fetched_at: string;
 }

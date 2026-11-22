@@ -19,6 +19,16 @@ STRATEGY_NAME = "SWING_TREND_FOLLOWING"
 ALLOWED_REGIMES = {1, 2}
 
 
+def _regime_allowed(regime: Optional[int]) -> bool:
+    """Allow Pullback regime 4 only when explicitly enabled by configuration."""
+    if regime is None:
+        return True
+    value = int(regime)
+    if value in ALLOWED_REGIMES:
+        return True
+    return value == 4 and os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower() in ("1", "true", "yes", "on")
+
+
 def _numeric_env(name: str, default: float) -> float:
     import os
 
@@ -185,7 +195,7 @@ def avaliar_setup(
     breakout_confirm_candles: Optional[int] = None,
 ) -> SwingSignal:
     """Avalia apenas candles já fechados e retorna um plano sem enviar ordem."""
-    if regime is not None and int(regime) not in ALLOWED_REGIMES:
+    if not _regime_allowed(regime):
         return SwingSignal(False, None, "regime_nao_elegivel", int(regime), None, None, None, None, None)
     if len(df_4h) < 220 or len(df_daily) < 55:
         return SwingSignal(False, None, "dados_4h_diario_insuficientes", regime, None, None, None, None, None)
@@ -235,7 +245,7 @@ def avaliar_setup_entrada_1h(
     breakout_confirm_candles: Optional[int] = None,
 ) -> SwingSignal:
     """Usa 4h/diário para direção e 1h somente para o gatilho."""
-    if regime is not None and int(regime) not in ALLOWED_REGIMES:
+    if not _regime_allowed(regime):
         return SwingSignal(False, None, "regime_nao_elegivel", int(regime), None, None, None, None, None)
     if len(df_1h) < 40 or len(df_4h) < 220 or len(df_daily) < 55:
         return SwingSignal(False, None, "dados_1h_4h_diario_insuficientes", regime, None, None, None, None, None)

@@ -914,9 +914,11 @@ def monitorar_ordem_ate_encerrar(trade_id, symbol, position_size, entry_price, s
         qty_str = f"{float(position_size):.6f}" if position_size is not None else "N/A"
         entry_str = f"{float(entry_price):.6f}" if entry_price is not None else "N/A"
         strategy_str = (strategy or "unknown").upper()
+        panel_url = os.getenv("GENESIS_PANEL_URL", "https://genesis-panel.onrender.com").rstrip("/")
         msg = (
-            f"[{strategy_str}] FILL | symbol={symbol} | side={side_str} | "
-            f"entry={entry_str} | qty={qty_str} | trade_id={trade_id}"
+            f"🔔 ORDEM ABERTA | estratégia={strategy_str} | ativo={symbol} | direção={side_str} | "
+            f"entrada={entry_str} | quantidade={qty_str} | trade_id={trade_id}\n"
+            f"Ver posição ao vivo: {panel_url}/positions"
         )
         send_telegram_message(msg)
     except Exception:
@@ -1341,9 +1343,11 @@ def monitorar_ordem_ate_encerrar(trade_id, symbol, position_size, entry_price, s
                     exit_str = f"{float(exit_price):.6f}" if exit_price is not None else "N/A"
                     pnl_str = f"{float(profit_loss):.6f}" if profit_loss is not None else "N/A"
                     strategy_str = (strategy or "unknown").upper()
+                    panel_url = os.getenv("GENESIS_PANEL_URL", "https://genesis-panel.onrender.com").rstrip("/")
                     msg = (
-                        f"[{strategy_str}] CLOSE | symbol={symbol} | side={side_str} | "
-                        f"entry={entry_str} | exit={exit_str} | pnl={pnl_str} | trade_id={trade_id}"
+                        f"✅ ORDEM FECHADA | estratégia={strategy_str} | ativo={symbol} | direção={side_str}\n"
+                        f"entrada={entry_str} | saída={exit_str} | resultado={pnl_str} | motivo={motivo_saida}\n"
+                        f"Ver detalhe: {panel_url}/trades/{trade_id}"
                     )
                     send_telegram_message(msg)
                     if str(strategy or "").strip().upper() == "SWING_TREND_FOLLOWING":

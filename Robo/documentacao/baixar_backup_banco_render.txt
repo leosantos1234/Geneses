@@ -1,0 +1,33 @@
+BACKUP DO BANCO genesis-db NO RENDER
+
+1. Abra o Render e copie a "External Database URL" usando o ícone de copiar.
+
+2. Abra o PowerShell e cole estes comandos, um bloco por vez:
+
+$dbUrl = Read-Host "Cole aqui a External Database URL do Render"
+
+3. Quando aparecer o campo para colar a URL, cole SOMENTE a URL, sem aspas antes ou depois.
+   Depois pressione Enter.
+
+4. Confira se a variável foi preenchida sem revelar o conteúdo:
+
+$dbUrl.Length
+
+   O resultado deve ser maior que zero.
+
+5. Gere o backup com o Docker:
+
+docker run --rm -v "C:\Users\NPO\Downloads:/backup" postgres:18 pg_dump "--dbname=$dbUrl" --format=c --file=/backup/genesis-db.dump --no-owner --no-privileges
+
+6. Confira o arquivo gerado:
+
+Get-Item "C:\Users\NPO\Downloads\genesis-db.dump"
+
+O tamanho do arquivo precisa ser maior que 0 bytes.
+
+7. Envie somente o arquivo genesis-db.dump para análise. Nunca envie a External Database URL, senha ou comando com credenciais.
+
+Observações:
+- Use a External Database URL, não a Internal Database URL.
+- O comando faz uma cópia de leitura e não altera o banco.
+- Se o arquivo anterior tiver 0 bytes, ele será substituído pelo novo backup.
