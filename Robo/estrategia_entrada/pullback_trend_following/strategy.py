@@ -22,6 +22,9 @@ def _backtest_parity_enabled() -> bool:
 
 
 def _regime_allowed(regime: Optional[int]) -> bool:
+    allow_regime_4 = os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower() in {"1", "true", "yes", "on"}
+    if allow_regime_4:
+        return regime is None or int(regime) in {1, 2, 3, 4}
     return regime is None or _backtest_parity_enabled() or int(regime) in ALLOWED_REGIMES
 
 

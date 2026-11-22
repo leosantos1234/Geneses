@@ -31,6 +31,9 @@ from estrategia_entrada.market_making_rules import canonical_config, quote_from_
 
 def _pullback_regime_allowed(regime: int | None) -> bool:
     """Keep live eligibility aligned with the canonical Pullback backtest when enabled."""
+    allow_regime_4 = os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower() in ("1", "true", "yes", "on")
+    if allow_regime_4:
+        return regime is not None
     if os.getenv("PULLBACK_BACKTEST_PARITY", "0").strip().lower() in ("1", "true", "yes", "on"):
         return regime is not None and int(regime) != 4
     return regime in {1, 2}
@@ -994,7 +997,11 @@ def executar_backtest_completo(df, sentimento, capital_inicial=1000, regime_over
                 )
                 logging.info("[FUNIL] Pullback habilitado em paralelo | regime_swing=%s", pullback_regime)
 
-    if (not breakout_only) and regime == 4:
+    pullback_regime_4_enabled = (
+        os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower() in ("1", "true", "yes", "on")
+        and selected_strategy == "PULLBACK_TREND_FOLLOWING"
+    )
+    if (not breakout_only) and regime == 4 and not pullback_regime_4_enabled:
         logging.info("[FUNIL][NO-TRADE] Regime 4 (caos): nenhuma estratÃ©gia elegÃ­vel.")
         return None, {"regime": regime, "candidatas": [], "sem_trade": []}, {}
 

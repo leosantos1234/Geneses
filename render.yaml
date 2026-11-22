@@ -134,6 +134,8 @@ services:
         value: "1"
       - key: PULLBACK_BACKTEST_PARITY
         value: "1"
+      - key: PULLBACK_ALLOW_REGIME_4
+        value: "1"
       - key: PULLBACK_LIVE_EXECUTOR_ENABLED
         value: "1"
 

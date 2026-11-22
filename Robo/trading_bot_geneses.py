@@ -2981,7 +2981,13 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     "SWING_AND_PULLBACK",
                 }
 
-                if regime == 4:
+                pullback_regime_4_enabled = (
+                    configured_strategy_router == "PULLBACK_TREND_FOLLOWING"
+                    and os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower()
+                    in ("1", "true", "yes", "on")
+                )
+
+                if regime == 4 and not pullback_regime_4_enabled:
                     logging.warning("[DEFESA] Regime 4 (caos). Cancelando ordens e limpando locks.")
                     try:
                         session.cancel_all_orders(category="linear", symbol=symbol)
@@ -3060,7 +3066,7 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     time.sleep(5)
                     continue
 
-                if not parametros_regime["permissao_operar"]:
+                if not parametros_regime["permissao_operar"] and not pullback_regime_4_enabled:
                     logging.warning(
                         f"[REGIME] Regime {regime} impede operaÃ§ao. Aguardando prÃ³ximo candle..."
                     )
@@ -4006,7 +4012,13 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     lado_aprovado = str(setup_now_side).lower()
                 if setup_now_ok:
                     status_funil = "evidencia"
-                regime_favoravel = melhor.get("regime") != 4
+                regime_favoravel = (
+                    melhor.get("regime") != 4
+                    or (
+                        os.getenv("PULLBACK_ALLOW_REGIME_4", "0").strip().lower()
+                        in ("1", "true", "yes", "on")
+                    )
+                )
                 if score_operacional is None:
                     score_operacional = float(setup_info.get("score") or 3.0)
                 logging.info(
