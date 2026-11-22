@@ -324,6 +324,129 @@ def _run_one_mean_reversion(asset: str, params: dict[str, float]) -> dict:
     }
 
 
+def _run_one_early_trend(asset: str, params: dict[str, float]) -> dict:
+    """Executa o Early Trend canônico em modo offline e determinístico."""
+    one = _read_frame(asset, "1h")
+    os.environ.update(
+        {
+            "EARLY_TREND_ENABLED": "1",
+            "BACKTEST_DYNAMIC_REGIME": "1",
+            "EARLY_TREND_LOOKBACK": str(params["lookback"]),
+            "EARLY_TREND_PIVOT_LEFT": str(params["pivot_left"]),
+            "EARLY_TREND_PIVOT_RIGHT": str(params["pivot_right"]),
+            "EARLY_TREND_PIVOTS_MIN": str(params["pivots_min"]),
+            "EARLY_TREND_INCL_FAST_MIN": str(params["incl_fast_min"]),
+            "EARLY_TREND_INCL_SLOW_MIN": str(params["incl_slow_min"]),
+            "EARLY_TREND_VOLUME_RATIO_MIN": str(params["volume_ratio_min"]),
+            "EARLY_TREND_MIN_RECOVERY_PCT": str(params["min_recovery_pct"]),
+            "RISCO_PERCENTUAL": str(params["risk_pct"]),
+            "BACKTEST_ENTRY_DELAY_CANDLES": str(params["entry_delay"]),
+        }
+    )
+    from estrategias.early_trend.early_trend_backtest import backtest_early_trend
+
+    result = backtest_early_trend(
+        one,
+        direcao=None,
+        capital_inicial=INITIAL_BALANCE,
+        regime_override=None,
+        symbol=asset,
+    )
+    trades = result.get("trade_log", []) or []
+    cost = float(params["cost_per_trade"])
+    final_balance, return_pct = _compound(trades, cost)
+    period_end = pd.to_datetime(one["time"].max(), utc=True)
+    oos_start = period_end - pd.Timedelta(days=365)
+    oos_balance, oos_return = _compound(trades, cost, oos_start)
+    equity = INITIAL_BALANCE
+    peak = equity
+    max_drawdown = 0.0
+    for trade in sorted(trades, key=lambda item: str(item.get("exit_time", ""))):
+        equity *= 1.0 + float(trade.get("pnl_pct", 0.0) or 0.0) / 100.0 - cost
+        peak = max(peak, equity)
+        max_drawdown = min(max_drawdown, equity / peak - 1.0)
+    return {
+        "asset": asset,
+        "strategy": "EARLY_TREND",
+        "timeframe": "1h",
+        "period_start": str(pd.to_datetime(one["time"].min(), utc=True)),
+        "period_end": str(period_end),
+        "parameters": params,
+        "trades": int(result.get("num_trades", len(trades)) or len(trades)),
+        "wins": int(sum(float(t.get("pnl_pct", 0.0) or 0.0) > 0 for t in trades)),
+        "winrate_pct": float(result.get("winrate", 0.0) or 0.0),
+        "return_pct": float(return_pct),
+        "final_balance": float(final_balance),
+        "max_drawdown_pct": float(max_drawdown * 100.0),
+        "oos_start": str(oos_start),
+        "oos_return_pct": float(oos_return),
+        "oos_final_balance": float(oos_balance),
+        "criteria_reference": "canonical_early_trend_offline_backtest",
+    }
+
+
+def _run_one_swing(asset: str, params: dict[str, float]) -> dict:
+    """Executa o Swing Trend Following canônico em modo offline."""
+    one = _read_frame(asset, "1h")
+    four = _read_frame(asset, "4h")
+    daily = _read_frame(asset, "1d")
+    os.environ.update(
+        {
+            "SWING_HISTORICAL_BACKTEST_ENABLED": "0",
+            "BACKTEST_MAKER_FEE_PCT_PER_SIDE": "0.02",
+            "BACKTEST_TAKER_FEE_PCT_PER_SIDE": "0.05",
+            "SWING_PAPER_EXIT_SLIPPAGE_PCT_PER_SIDE": "0.02",
+        }
+    )
+    from estrategia_entrada.swing_trend_following.strategy import backtest_entrada_1h
+
+    result = backtest_entrada_1h(
+        one,
+        four,
+        daily,
+        regime=None,
+        breakout_min_atr=params["breakout_min_atr"],
+        breakout_volume_ratio=params["breakout_volume_ratio"],
+        breakout_confirm_candles=int(params["breakout_confirm_candles"]),
+        paper_entry_mode="IMMEDIATE",
+        stop_atr=params["stop_atr"],
+        target_atr=params["target_atr"],
+        trailing_atr=params["trailing_atr"],
+        entry_volume_max_ratio=params["entry_volume_max_ratio"],
+    )
+    trades = result.get("trade_log", []) or []
+    cost = float(params["cost_per_trade"])
+    final_balance, return_pct = _compound(trades, cost)
+    period_end = pd.to_datetime(one["time"].max(), utc=True)
+    oos_start = period_end - pd.Timedelta(days=365)
+    oos_balance, oos_return = _compound(trades, cost, oos_start)
+    equity = INITIAL_BALANCE
+    peak = equity
+    max_drawdown = 0.0
+    for trade in sorted(trades, key=lambda item: str(item.get("exit_time", ""))):
+        equity *= 1.0 + float(trade.get("pnl_pct", 0.0) or 0.0) / 100.0 - cost
+        peak = max(peak, equity)
+        max_drawdown = min(max_drawdown, equity / peak - 1.0)
+    return {
+        "asset": asset,
+        "strategy": "SWING_TREND_FOLLOWING",
+        "timeframe": "1h/4h/1d",
+        "period_start": str(pd.to_datetime(one["time"].min(), utc=True)),
+        "period_end": str(period_end),
+        "parameters": params,
+        "trades": int(result.get("num_trades", len(trades)) or len(trades)),
+        "wins": int(sum(float(t.get("pnl_pct", 0.0) or 0.0) > 0 for t in trades)),
+        "winrate_pct": float(result.get("winrate", 0.0) or 0.0),
+        "return_pct": float(return_pct),
+        "final_balance": float(final_balance),
+        "max_drawdown_pct": float(max_drawdown * 100.0),
+        "oos_start": str(oos_start),
+        "oos_return_pct": float(oos_return),
+        "oos_final_balance": float(oos_balance),
+        "criteria_reference": "canonical_swing_trend_following_1h_4h_1d",
+    }
+
+
 def _run_one_market_making(asset: str, params: dict[str, float]) -> dict:
     """Executa o simulador canônico de Market Making em modo local."""
     one = _read_frame(asset, "1h")
@@ -404,6 +527,39 @@ def _mean_reversion_parameter_grid() -> list[dict[str, float]]:
     return [dict(zip(names, combo)) for combo in itertools.product(*(values[name] for name in names))]
 
 
+def _early_trend_parameter_grid() -> list[dict[str, float]]:
+    values = {
+        "lookback": (60, 80, 120),
+        "pivot_left": (2,),
+        "pivot_right": (2,),
+        "pivots_min": (2, 3),
+        "incl_fast_min": (0.0008, 0.0012),
+        "incl_slow_min": (0.0015, 0.0020),
+        "volume_ratio_min": (0.8, 1.0),
+        "min_recovery_pct": (0.0, 0.5),
+        "risk_pct": (0.004,),
+        "entry_delay": (1,),
+        "cost_per_trade": (0.0019,),
+    }
+    names = tuple(values)
+    return [dict(zip(names, combo)) for combo in itertools.product(*(values[name] for name in names))]
+
+
+def _swing_parameter_grid() -> list[dict[str, float]]:
+    values = {
+        "breakout_min_atr": (0.0, 0.15),
+        "breakout_volume_ratio": (0.0, 1.0),
+        "breakout_confirm_candles": (1,),
+        "stop_atr": (1.8, 2.0, 2.5),
+        "target_atr": (3.0, 4.0),
+        "trailing_atr": (2.0, 2.5),
+        "entry_volume_max_ratio": (0.0,),
+        "cost_per_trade": (0.00095,),
+    }
+    names = tuple(values)
+    return [dict(zip(names, combo)) for combo in itertools.product(*(values[name] for name in names))]
+
+
 def _market_making_parameter_grid() -> list[dict[str, float]]:
     values = {
         "order_qty": (0.001, 0.002),
@@ -421,7 +577,7 @@ def _market_making_parameter_grid() -> list[dict[str, float]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Busca local de backtests de 36 meses")
-    parser.add_argument("--strategy", choices=("PULLBACK", "BREAKOUT", "MEAN_REVERSION", "MARKET_MAKING_LATERAL"), default="PULLBACK")
+    parser.add_argument("--strategy", choices=("PULLBACK", "BREAKOUT", "MEAN_REVERSION", "EARLY_TREND", "SWING_TREND_FOLLOWING", "MARKET_MAKING_LATERAL"), default="PULLBACK")
     parser.add_argument("--assets", nargs="+", default=list(DEFAULT_ASSETS), choices=list(DEFAULT_ASSETS))
     parser.add_argument("--min-return", type=float, default=DEFAULT_MIN_RETURN)
     args = parser.parse_args()
@@ -435,6 +591,8 @@ def main() -> int:
         "PULLBACK": _parameter_grid,
         "BREAKOUT": _breakout_parameter_grid,
         "MEAN_REVERSION": _mean_reversion_parameter_grid,
+        "EARLY_TREND": _early_trend_parameter_grid,
+        "SWING_TREND_FOLLOWING": _swing_parameter_grid,
         "MARKET_MAKING_LATERAL": _market_making_parameter_grid,
     }[args.strategy]()
     total = len(args.assets) * len(grid)
@@ -456,6 +614,8 @@ def main() -> int:
                         "PULLBACK": _run_one,
                         "BREAKOUT": _run_one_breakout,
                         "MEAN_REVERSION": _run_one_mean_reversion,
+                        "EARLY_TREND": _run_one_early_trend,
+                        "SWING_TREND_FOLLOWING": _run_one_swing,
                         "MARKET_MAKING_LATERAL": _run_one_market_making,
                     }
                     result = runners[args.strategy](asset, params)

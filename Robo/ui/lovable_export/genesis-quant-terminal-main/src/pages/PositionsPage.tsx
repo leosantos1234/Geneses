@@ -2,10 +2,11 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { DataTable } from "@/components/DataTable";
-import { SideBadge, PnlDisplay } from "@/components/Badges";
+import { SideBadge } from "@/components/Badges";
 import { FilterBar, FilterSelect } from "@/components/FilterBar";
 import { LoadingState, ErrorState, EmptyState } from "@/components/StateDisplays";
 import type { ExchangeBalanceSnapshot } from "@/types/api";
+import { useCurrency } from "@/contexts/CurrencyContext";
 
 const price = (value?: number) => value === undefined || value === null || value === 0
   ? "—"
@@ -19,6 +20,7 @@ function pnlPercent(position: ExchangeBalanceSnapshot["open_positions"][number])
 
 export default function PositionsPage() {
   const [symbol, setSymbol] = useState("ALL");
+  const { formatMoney } = useCurrency();
   const positionsQuery = useQuery({
     queryKey: ["live-positions"],
     queryFn: () => api.exchangeBalance(1),
@@ -38,7 +40,7 @@ export default function PositionsPage() {
     { key: "size", header: "Quantidade", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <span className="font-mono-nums">{r.size.toLocaleString("en-US", { maximumFractionDigits: 8 })}</span> },
     { key: "entry_price", header: "Entrou em", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <span className="font-mono-nums">{price(r.entry_price)}</span> },
     { key: "current_price", header: "Preço atual", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <span className="font-mono-nums">{price(r.current_price)}</span> },
-    { key: "unrealized_pnl", header: "Ganho / perda", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <div><PnlDisplay value={r.unrealized_pnl} /><div className={`font-mono-nums text-[11px] ${r.unrealized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{r.unrealized_pnl >= 0 ? "+" : ""}{pnlPercent(r).toFixed(2)}%</div></div> },
+    { key: "unrealized_pnl", header: "Ganho / perda", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <div><span className={`font-mono-nums font-medium ${r.unrealized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{formatMoney(r.unrealized_pnl, { sign: true })}</span><div className={`font-mono-nums text-[11px] ${r.unrealized_pnl >= 0 ? "text-profit" : "text-loss"}`}>{r.unrealized_pnl >= 0 ? "+" : ""}{pnlPercent(r).toFixed(2)}%</div></div> },
     { key: "leverage", header: "Alavancagem", render: (r: ExchangeBalanceSnapshot["open_positions"][number]) => <span className="font-mono-nums">{r.leverage ? `${r.leverage}x` : "—"}</span> },
   ];
 
@@ -51,7 +53,7 @@ export default function PositionsPage() {
         </div>
         <div className="rounded-md border border-border px-3 py-2 text-right">
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">PnL aberto{symbol !== "ALL" ? ` · ${symbol}` : ""}</div>
-          <PnlDisplay value={totalPnl} />
+          <span className={`font-mono-nums font-medium ${totalPnl >= 0 ? "text-profit" : "text-loss"}`}>{formatMoney(totalPnl, { sign: true })}</span>
         </div>
       </div>
 
