@@ -2,7 +2,9 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export type DisplayCurrency = "USD" | "BRL";
 type CurrencyContextValue = { currency: DisplayCurrency; setCurrency: (currency: DisplayCurrency) => void; rate: number; formatMoney: (value?: number | null, options?: { sign?: boolean }) => string };
-const FALLBACK_USD_BRL = 5;
+// Fallback de segurança: evita uma conversão claramente defasada caso a API
+// esteja temporariamente indisponível. A cotação exibida informa a taxa usada.
+const FALLBACK_USD_BRL = 5.95;
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
@@ -11,11 +13,16 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => { window.localStorage.setItem("genesis-display-currency", currency); }, [currency]);
   useEffect(() => {
     let active = true;
-    fetch("https://api.frankfurter.app/latest?from=USD&to=BRL")
+    const loadRate = () => fetch("https://open.er-api.com/v6/latest/USD")
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("fx unavailable")))
-      .then((data: { rates?: { BRL?: number } }) => { if (active && data.rates?.BRL && Number.isFinite(data.rates.BRL)) setRate(data.rates.BRL); })
+      .then((data: { rates?: { BRL?: number } }) => {
+        const nextRate = data.rates?.BRL;
+        if (active && nextRate && Number.isFinite(nextRate) && nextRate > 4 && nextRate < 8) setRate(nextRate);
+      })
       .catch(() => undefined);
-    return () => { active = false; };
+    loadRate();
+    const timer = window.setInterval(loadRate, 15 * 60 * 1000);
+    return () => { active = false; window.clearInterval(timer); };
   }, []);
   const value = useMemo<CurrencyContextValue>(() => ({
     currency,
