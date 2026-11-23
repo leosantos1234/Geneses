@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -33,6 +34,22 @@ class _RunState:
 MAX_SKILL_CALLS = 4
 MAX_RAG_CALLS = 3
 ORCHESTRATOR_TIMEOUT_SECONDS = 30.0
+
+
+def _env_int(name: str, default: int) -> int:
+    """Read a positive integer setting without making startup fail on bad env input."""
+    try:
+        return max(int(os.getenv(name, str(default))), 1)
+    except (TypeError, ValueError):
+        logging.warning("[RAG_POLICY] invalid %s; using default=%d", name, default)
+        return default
+
+
+RAG_CONFIRMATION_MIN_CONTEXT = _env_int("GENESIS_RAG_CONFIRMATION_MIN_CONTEXT", 5)
+RAG_VALIDATION_MIN_CONTEXT = max(
+    _env_int("GENESIS_RAG_VALIDATION_MIN_CONTEXT", 10),
+    RAG_CONFIRMATION_MIN_CONTEXT,
+)
 APPROVED_SKILLS = {
     "trade_decision_autopsy",
     "risk_review",
@@ -69,6 +86,21 @@ class CommanderSkillCallLimitExceeded(CommanderOrchestratorError):
 class CommanderRAGCallLimitExceeded(CommanderOrchestratorError):
     """MAX_RAG_CALLS exceeded."""
     pass
+
+
+def rag_review_status(context_count: int) -> str:
+    """Return an advisory RAG maturity label without changing execution authority.
+
+    RAG is intentionally advisory.  The labels are written to the runtime log
+    so operators can decide when to promote the review mode; no label authorizes
+    an order or bypasses the strategy and risk gates.
+    """
+    count = max(int(context_count or 0), 0)
+    if count >= RAG_VALIDATION_MIN_CONTEXT:
+        return "VALIDATION_SUGGESTED"
+    if count >= RAG_CONFIRMATION_MIN_CONTEXT:
+        return "CONFIRMATION_FILTER_SUGGESTED"
+    return "OBSERVATION"
 
 
 class CommanderOrchestrator:
@@ -148,6 +180,17 @@ class CommanderOrchestrator:
         rag_evidence, rag_prov = await self._retrieve_rag_context(subject, symbol, as_of, run_state)
         evidence.extend(rag_evidence)
         rag_context_used.extend(rag_prov)
+        review_status = rag_review_status(len(rag_context_used))
+        logging.info(
+            "[RAG_POLICY] subject=%s symbol=%s status=%s contexts=%d "
+            "confirmation_min=%d validation_min=%d action=ADVISORY_ONLY",
+            subject,
+            symbol or "DATA_NOT_AVAILABLE",
+            review_status,
+            len(rag_context_used),
+            RAG_CONFIRMATION_MIN_CONTEXT,
+            RAG_VALIDATION_MIN_CONTEXT,
+        )
 
         # Phase 3: Derive bounded decision deterministically
         # Decision derivation must not let untrusted RAG text directly control enum
@@ -419,10 +462,10 @@ class CommanderOrchestrator:
         )
         if has_data_not_available and len(evidence) == 1:
             return {
-                "decision": DecisionType.INSUFFICIENT_DATA,
-                "confidence": ConfidenceLevel.NOT_APPLICABLE,
-                "summary": "No context available",
-                "rationale": "RAG returned no matching context",
+                "decision": DecisionType.WATCH,
+                "confidence": ConfidenceLevel.LOW,
+                "summary": "RAG em observação",
+                "rationale": "RAG sem contexto compatível; não bloqueia a estratégia, o risco ou o gatilho técnico",
             }
 
         # HARDENING: Extract only structured signals, not raw untrusted text
