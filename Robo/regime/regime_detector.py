@@ -117,7 +117,7 @@ class RegimeDetector:
         # =========================
         logger.info(f"Regime slopes: EMA12/{slope_lookback}={slope_fast:.4f} | EMA50/{slope_lookback}={slope_slow:.4f}")
         logger.info("🔍 [REGIME] Diagnóstico do Mercado")
-        logger.info(f"• ATR%: {atr_pct:.2f}%")
+        logger.info(f"[ATR][REGIME] ATR%: {atr_pct:.2f}%")
         logger.info(f"• Inclinação Fast: {incl_fast:.4f}")
         logger.info(f"• Inclinação Slow: {incl_slow:.4f}")
         logger.info(f"• Volume Ratio: {volume_ratio:.2f}")

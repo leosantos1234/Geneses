@@ -188,7 +188,14 @@ def obter_previsao_next_candle(df_lstm):
 
 
 
-def should_enter_market(df, mode=None, side="buy", sentimento=None, return_details=False):
+def should_enter_market(
+    df,
+    mode=None,
+    side="buy",
+    sentimento=None,
+    return_details=False,
+    timeframe_label=None,
+):
     """
     Calcula a pontuaÃ§Ã£o e valida se deve entrar no mercado para COMPRA (buy) ou VENDA (sell).
     Usa o sentimento passado externamente (global) para evitar mÃºltiplas chamadas Ã  API.
@@ -280,11 +287,31 @@ def should_enter_market(df, mode=None, side="buy", sentimento=None, return_detai
 
     if ultimo_atr is not None and close:
         atr_pct = ultimo_atr / close
+        timeframe_text = str(timeframe_label or "desconhecido")
+        logging.info(
+            "[ATR][ENTRY] timeframe=%s atr=%.8f close=%.8f percentual=%.2f%% limite_min=%.2f%% limite_max=%.2f%%",
+            timeframe_text,
+            float(ultimo_atr),
+            float(close),
+            float(atr_pct * 100.0),
+            float(ATR_PCT_MIN * 100.0),
+            float(ATR_PCT_MAX * 100.0),
+        )
         if atr_pct < ATR_PCT_MIN:
-            logging.info(f"ðŸš« ATR % ({atr_pct:.2%}) abaixo do mÃ­nimo ({ATR_PCT_MIN:.2%}).")
+            logging.info(
+                "[ATR][ENTRY][BLOCK] timeframe=%s motivo=abaixo_minimo valor=%.2f%% limite=%.2f%%",
+                timeframe_text,
+                float(atr_pct * 100.0),
+                float(ATR_PCT_MIN * 100.0),
+            )
             return _retornar(False, 0, None, "atr_pct_baixo")
         if atr_pct > ATR_PCT_MAX:
-            logging.info(f"ðŸš« ATR % ({atr_pct:.2%}) acima do mÃ¡ximo ({ATR_PCT_MAX:.2%}).")
+            logging.info(
+                "[ATR][ENTRY][BLOCK] timeframe=%s motivo=acima_maximo valor=%.2f%% limite=%.2f%%",
+                timeframe_text,
+                float(atr_pct * 100.0),
+                float(ATR_PCT_MAX * 100.0),
+            )
             return _retornar(False, 0, None, "atr_pct_alto")
 
     if ultimo_volume < VOLUME_MINIMO:
@@ -730,7 +757,7 @@ def _sentimento_por_lado(sentimento_global, side):
     return sentimento_global
 
 
-def validar_entrada_com_score_duplo(df, mode=None):
+def validar_entrada_com_score_duplo(df, mode=None, timeframe_label=None):
     """
     Avalia compra e venda simultaneamente.
     Mesmo que um lado atinja o score mÃ­nimo primeiro,
@@ -748,10 +775,20 @@ def validar_entrada_com_score_duplo(df, mode=None):
     sent_buy_eff = _sentimento_por_lado(sentimento_global, "buy")
     sent_sell_eff = _sentimento_por_lado(sentimento_global, "sell")
     passou_buy, score_buy, pred_buy, sent_buy, details_buy = should_enter_market(
-        df, mode, side="buy", sentimento=sent_buy_eff, return_details=True
+        df,
+        mode,
+        side="buy",
+        sentimento=sent_buy_eff,
+        return_details=True,
+        timeframe_label=timeframe_label,
     )
     passou_sell, score_sell, pred_sell, sent_sell, details_sell = should_enter_market(
-        df, mode, side="sell", sentimento=sent_sell_eff, return_details=True
+        df,
+        mode,
+        side="sell",
+        sentimento=sent_sell_eff,
+        return_details=True,
+        timeframe_label=timeframe_label,
     )
 
     required_score, mode = _obter_regras_validacao(mode)
@@ -848,14 +885,16 @@ def validar_entrada_com_score_duplo(df, mode=None):
 
 
 
-def checar_oportunidade_entrada(df, mode=None):
+def checar_oportunidade_entrada(df, mode=None, timeframe_label=None):
     """
     Avalia compra e venda simultaneamente e decide se deve prosseguir.
     Retorna: prosseguir (bool), lado_aprovado (str), resultados (dict)
     """
     logging.info("âš–ï¸ Iniciando checagem de oportunidade de entrada...")
 
-    prosseguir, lado, resultados = validar_entrada_com_score_duplo(df, mode)
+    prosseguir, lado, resultados = validar_entrada_com_score_duplo(
+        df, mode, timeframe_label=timeframe_label
+    )
 
     logging.info("ðŸ“Š Resumo Final de Oportunidade de Entrada:")
     logging.info(f"BUY  â†’ {resultados['buy']}")

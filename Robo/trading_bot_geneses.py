@@ -2934,6 +2934,14 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                 # 1) Detectar o regime com o df principal jÃ¡ preparado
                 regime = detector.detectar(df_5m_regime, symbol=symbol)
                 logging.info(f"ðŸ“Š Regime detectado para {symbol}: {regime}")
+                regime_diag = detector.last_diagnostics or {}
+                logging.info(
+                    "[ATR][REGIME_5M] symbol=%s atr=%.8f close=%.8f percentual=%.2f%%",
+                    symbol,
+                    float(regime_diag.get("atr") or 0.0),
+                    float(regime_diag.get("close") or 0.0),
+                    float(regime_diag.get("atr_percent") or 0.0),
+                )
                 try:
                     record_regime_evaluation(
                         symbol=symbol,
@@ -3105,7 +3113,9 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     "[PULLBACK][PARIDADE] Modo estrito ativo: backtest Pullback Ã© a autoridade da entrada; "
                     "score/LSTM/sentimento genÃ©ricos nÃ£o alteram o setup."
                 )
-            prosseguir, lado, resultados = checar_oportunidade_entrada(df)
+            prosseguir, lado, resultados = checar_oportunidade_entrada(
+                df, timeframe_label=f"{interval}m"
+            )
             decision_id = None
             # Every valid candle evaluation is a decision, including HOLD/no-entry.
             # The previous condition dropped no-entry results because the legacy
