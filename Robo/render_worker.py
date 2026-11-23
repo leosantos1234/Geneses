@@ -26,6 +26,21 @@ SUPPORTED_STRATEGIES = {
     "MARKET_MAKING_LATERAL",
 }
 
+# Perfil aprovado no backtest do SOL (748,69% no período completo).
+# Os parâmetros continuam sendo sobrescritos pelo ambiente quando necessário,
+# mas o worker remoto aplica este perfil somente ao processo SOLUSDT.
+PULLBACK_ASSET_PROFILES = {
+    "SOLUSDT": {
+        "PULLBACK_STOP_ATR": "2.0",
+        "PULLBACK_TARGET_ATR": "3.5",
+        "PULLBACK_TRAILING_ATR": "2.0",
+        "PULLBACK_VOLUME_MIN_RATIO": "0.8",
+        "PULLBACK_COOLDOWN_CANDLES": "3",
+        "PULLBACK_COST_PER_TRADE": "0.00095",
+        "PULLBACK_ENTRY_TIMEFRAME": "1h",
+    },
+}
+
 
 def _assets() -> list[str]:
     return [item.strip().upper() for item in os.getenv("GENESIS_ASSET_LIST", "BTC,ETH,BNB,SOL,XRP,AVAX").split(",") if item.strip()]
@@ -56,6 +71,16 @@ def _start(asset: str, strategy: str) -> None:
     env["ATIVOS"] = f"{asset}USDT"
     env["GENESIS_STRATEGY_SELECTION"] = strategy
     env["ROBO_ENV_FILE"] = ""
+    profile = PULLBACK_ASSET_PROFILES.get(f"{asset}USDT" if not asset.endswith("USDT") else asset)
+    if profile and strategy == "PULLBACK_TREND_FOLLOWING":
+        env.update(profile)
+        print(
+            f"perfil pullback aplicado asset={asset} "
+            f"stop={profile['PULLBACK_STOP_ATR']} "
+            f"target={profile['PULLBACK_TARGET_ATR']} "
+            f"trail={profile['PULLBACK_TRAILING_ATR']}",
+            flush=True,
+        )
     # Garante que cada print do processo filho apareça imediatamente no Render.
     env["PYTHONUNBUFFERED"] = "1"
     started_at = time.monotonic()
