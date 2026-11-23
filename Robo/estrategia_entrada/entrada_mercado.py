@@ -221,10 +221,20 @@ def should_enter_market(
     if mode is None:
         mode = os.getenv("MODO_VALIDACAO", "agressivo").strip().lower()
 
+    selected_strategy = os.getenv("GENESIS_STRATEGY_SELECTION", "").strip().upper().replace(" ", "_")
+    strict_pullback_parity = (
+        selected_strategy == "PULLBACK_TREND_FOLLOWING"
+        and os.getenv("PULLBACK_BACKTEST_PARITY", "0").strip().lower()
+        in ("1", "true", "yes", "on")
+    )
+
     # ================================================================
     # ðŸ§­ Gate de tendÃªncia macro (evita lado errado em contra-tendÃªncia)
     # ================================================================
-    entry_require_trend_align = os.getenv("ENTRY_REQUIRE_TREND_ALIGN", "1").strip().lower() in ("1", "true", "yes")
+    entry_require_trend_align = (
+        os.getenv("ENTRY_REQUIRE_TREND_ALIGN", "1").strip().lower() in ("1", "true", "yes")
+        and not strict_pullback_parity
+    )
     trend_lookback = int(os.getenv("ENTRY_TREND_LOOKBACK", "5"))
     trend_lookback = max(2, trend_lookback)
     trend_min_gap_pct = float(os.getenv("ENTRY_TREND_MIN_GAP_PCT", "0.0006"))
@@ -297,7 +307,12 @@ def should_enter_market(
             float(ATR_PCT_MIN * 100.0),
             float(ATR_PCT_MAX * 100.0),
         )
-        if atr_pct < ATR_PCT_MIN:
+        if strict_pullback_parity:
+            logging.info(
+                "[PULLBACK][PARIDADE] Filtro genérico ATR ignorado; "
+                "ATR será usado somente no stop/alvo/trailing do setup canônico."
+            )
+        elif atr_pct < ATR_PCT_MIN:
             logging.info(
                 "[ATR][ENTRY][BLOCK] timeframe=%s motivo=abaixo_minimo valor=%.2f%% limite=%.2f%%",
                 timeframe_text,
@@ -305,7 +320,7 @@ def should_enter_market(
                 float(ATR_PCT_MIN * 100.0),
             )
             return _retornar(False, 0, None, "atr_pct_baixo")
-        if atr_pct > ATR_PCT_MAX:
+        if not strict_pullback_parity and atr_pct > ATR_PCT_MAX:
             logging.info(
                 "[ATR][ENTRY][BLOCK] timeframe=%s motivo=acima_maximo valor=%.2f%% limite=%.2f%%",
                 timeframe_text,

@@ -3113,8 +3113,9 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     "[PULLBACK][PARIDADE] Modo estrito ativo: backtest Pullback Ã© a autoridade da entrada; "
                     "score/LSTM/sentimento genÃ©ricos nÃ£o alteram o setup."
                 )
+            decision_timeframe_label = "1h" if strict_pullback_parity else f"{interval}m"
             prosseguir, lado, resultados = checar_oportunidade_entrada(
-                df, timeframe_label=f"{interval}m"
+                df, timeframe_label=decision_timeframe_label
             )
             decision_id = None
             # Every valid candle evaluation is a decision, including HOLD/no-entry.
