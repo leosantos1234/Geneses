@@ -91,9 +91,8 @@ function ActiveWorkersSummary() {
 function ExchangeBalanceCard() {
   const { user } = useAuth();
   const [periodDays, setPeriodDays] = useState(7);
-  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["exchange-balance", periodDays], queryFn: () => api.exchangeBalance(periodDays), refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
+  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["exchange-balance", periodDays], queryFn: () => api.exchangeBalance(periodDays), refetchInterval: 30_000, retry: 1, enabled: Boolean(user) });
   const { currency, setCurrency, rate, formatMoney } = useCurrency();
-  if (user?.role !== "admin") return null;
   const money = (value: number) => formatMoney(value);
   const periodLabel = periodDays === 1 ? "últimas 24 horas" : periodDays === 3650 ? "todo o histórico" : `últimos ${periodDays} dias`;
   return <section className="rounded-lg border border-primary/30 bg-card p-4">
@@ -105,10 +104,9 @@ function ExchangeBalanceCard() {
 function PerformanceRanking() {
   const { user } = useAuth();
   const [periodDays, setPeriodDays] = useState(7);
-  const performance = useQuery({ queryKey: ["performance-breakdown", periodDays], queryFn: () => api.performanceBreakdown(periodDays), refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
-  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["performance-balance", periodDays], queryFn: () => api.exchangeBalance(periodDays), refetchInterval: 30_000, retry: 1, enabled: user?.role === "admin" });
+  const performance = useQuery({ queryKey: ["performance-breakdown", periodDays], queryFn: () => api.performanceBreakdown(periodDays), refetchInterval: 30_000, retry: 1, enabled: Boolean(user) });
+  const balance = useQuery<ExchangeBalanceSnapshot>({ queryKey: ["performance-balance", periodDays], queryFn: () => api.exchangeBalance(periodDays), refetchInterval: 30_000, retry: 1, enabled: Boolean(user) });
   const { formatMoney } = useCurrency();
-  if (user?.role !== "admin") return null;
   const periodLabel = periodDays === 1 ? "24h" : periodDays === 3650 ? "histórico" : `${periodDays}d`;
   const rows = performance.data?.rows || [];
   const money = (value: number) => formatMoney(value, { sign: true });

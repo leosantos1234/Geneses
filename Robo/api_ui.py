@@ -244,7 +244,7 @@ def _exchange_balance_snapshot(days: int = 7) -> dict[str, Any]:
 @app.get("/api/ui/exchange-balance")
 def exchange_balance(
     days: int = Query(default=7, ge=1, le=3650),
-    _user: dict[str, str] = Depends(_require_admin),
+    _user: dict[str, str] = Depends(require_auth),
 ) -> dict[str, Any]:
     try:
         return _exchange_balance_snapshot(days=days)
