@@ -396,13 +396,16 @@ def start_workers(payload: WorkerSelectionRequest, _user: dict[str, str] = Depen
     if not payload.assets:
         raise HTTPException(status_code=400, detail="Selecione pelo menos um ativo")
     try:
+        normalized_strategy = str(payload.strategy or "").strip().upper().replace(" ", "_")
+        if normalized_strategy not in worker_manager.STRATEGIES:
+            raise ValueError("Selecione uma estratégia válida antes de iniciar o worker")
         if os.getenv("GENESIS_REMOTE_WORKER_CONTROL", "").strip().lower() in {"1", "true", "yes", "on"}:
             allowed = {item["id"] for item in worker_manager.available_assets()}
             invalid = [asset for asset in payload.assets if asset.upper() not in allowed]
             if invalid:
                 raise ValueError(f"Ativo(s) indisponível(is): {', '.join(invalid)}")
-            return {"workers": repository.set_ui_worker_states([asset.upper() for asset in payload.assets], running=True, strategy=payload.strategy)}
-        return {"workers": worker_manager.start(payload.assets, payload.strategy)}
+            return {"workers": repository.set_ui_worker_states([asset.upper() for asset in payload.assets], running=True, strategy=normalized_strategy)}
+        return {"workers": worker_manager.start(payload.assets, normalized_strategy)}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

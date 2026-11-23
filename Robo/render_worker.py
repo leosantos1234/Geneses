@@ -17,6 +17,15 @@ children: dict[str, subprocess.Popen] = {}
 child_started_at: dict[str, float] = {}
 restart_counts: dict[str, int] = {}
 
+SUPPORTED_STRATEGIES = {
+    "BREAKOUT",
+    "SWING_TREND_FOLLOWING",
+    "EARLY_TREND",
+    "PULLBACK_TREND_FOLLOWING",
+    "MEAN_REVERSION",
+    "MARKET_MAKING_LATERAL",
+}
+
 
 def _assets() -> list[str]:
     return [item.strip().upper() for item in os.getenv("GENESIS_ASSET_LIST", "BTC,ETH,BNB,SOL,XRP,AVAX").split(",") if item.strip()]
@@ -70,6 +79,18 @@ def _start(asset: str, strategy: str) -> None:
         f"pid={children[asset].pid} tentativa={restart_counts[asset]}",
         flush=True,
     )
+
+
+def _strategy_from_state(asset: str, state: dict) -> str | None:
+    """Use only an explicitly persisted, supported strategy."""
+    raw_strategy = str(state.get("strategy") or "").strip().upper().replace(" ", "_")
+    if not raw_strategy:
+        print(f"worker não iniciado asset={asset} motivo=STRATEGY_NOT_CONFIGURED", flush=True)
+        return None
+    if raw_strategy not in SUPPORTED_STRATEGIES:
+        print(f"worker não iniciado asset={asset} motivo=STRATEGY_INVALID strategy={raw_strategy}", flush=True)
+        return None
+    return raw_strategy
 
 
 def _forward_child_output(asset: str, strategy: str, process: subprocess.Popen) -> None:
@@ -126,7 +147,11 @@ def main() -> None:
         for asset in _assets():
             state = desired.get(asset, {})
             if state.get("running"):
-                _start(asset, str(state.get("strategy") or "SWING_TREND_FOLLOWING"))
+                strategy = _strategy_from_state(asset, state)
+                if strategy is not None:
+                    _start(asset, strategy)
+                else:
+                    _stop(asset)
             else:
                 _stop(asset)
         for asset, process in list(children.items()):

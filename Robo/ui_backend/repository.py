@@ -149,7 +149,7 @@ def ensure_ui_worker_states_table() -> None:
         _execute(conn, """
             CREATE TABLE IF NOT EXISTS ui_worker_states (
                 asset TEXT PRIMARY KEY,
-                strategy TEXT NOT NULL DEFAULT 'SWING_TREND_FOLLOWING',
+                strategy TEXT NOT NULL,
                 running BOOLEAN NOT NULL DEFAULT FALSE,
                 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
@@ -169,9 +169,9 @@ def set_ui_worker_states(assets: list[str], *, running: bool, strategy: str | No
                     VALUES (?, ?, ?) ON CONFLICT (asset) DO UPDATE SET strategy = EXCLUDED.strategy,
                     running = EXCLUDED.running, updated_at = CURRENT_TIMESTAMP""", [asset, strategy, running])
             else:
-                _execute(conn, """INSERT INTO ui_worker_states (asset, strategy, running)
-                    VALUES (?, 'SWING_TREND_FOLLOWING', ?) ON CONFLICT (asset) DO UPDATE SET
-                    running = EXCLUDED.running, updated_at = CURRENT_TIMESTAMP""", [asset, running])
+                _execute(conn, """UPDATE ui_worker_states
+                    SET running = ?, updated_at = CURRENT_TIMESTAMP
+                    WHERE asset = ?""", [running, asset])
         conn.commit()
         return list_ui_worker_states()
     finally:
