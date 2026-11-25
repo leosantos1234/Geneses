@@ -3114,9 +3114,28 @@ def iniciar_robo(session, symbol, max_trades_per_day, loss_limit_percent, interv
                     "score/LSTM/sentimento genÃ©ricos nÃ£o alteram o setup."
                 )
             decision_timeframe_label = "1h" if strict_pullback_parity else f"{interval}m"
-            prosseguir, lado, resultados = checar_oportunidade_entrada(
-                df, timeframe_label=decision_timeframe_label
-            )
+            if strict_strategy_parity:
+                # Estratégias com paridade estrita possuem seu próprio probe
+                # canônico. Não execute o gate técnico legado aqui: ele gera
+                # logs de score/LSTM/sentimento e pode parecer Breakout mesmo
+                # quando o worker está configurado para Pullback ou Swing.
+                strategy_label = "PULLBACK" if strict_pullback_parity else "SWING"
+                prosseguir, lado, resultados = False, "AUTO", {
+                    "score_pct": 0.0,
+                    "buy": {"score": 0.0},
+                    "sell": {"score": 0.0},
+                    "strategy_gate_skipped": True,
+                }
+                logging.info(
+                    "[%s][STRATEGY_GATE] Gate técnico genérico ignorado; "
+                    "o setup canônico %s é a única fonte de decisão.",
+                    strategy_label,
+                    strategy_label,
+                )
+            else:
+                prosseguir, lado, resultados = checar_oportunidade_entrada(
+                    df, timeframe_label=decision_timeframe_label
+                )
             decision_id = None
             # Every valid candle evaluation is a decision, including HOLD/no-entry.
             # The previous condition dropped no-entry results because the legacy

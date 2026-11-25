@@ -7,6 +7,8 @@ funil, Commander, risco e write gate do worker.
 from __future__ import annotations
 
 import os
+import json
+import logging
 from dataclasses import asdict, dataclass
 from typing import Optional
 
@@ -105,11 +107,58 @@ def _latest_asof(frame: pd.DataFrame, timestamp, closed_context: bool = True) ->
     return frame.iloc[int(index)]
 
 
-def _context_signal(one: pd.Series, four: pd.Series, day: pd.Series, regime: Optional[int]) -> PullbackSignal:
+def _log_setup_diagnostic(
+    *,
+    entry_label: str,
+    current: Optional[pd.Series],
+    four: Optional[pd.Series],
+    day: Optional[pd.Series],
+    regime: Optional[int],
+    reason: str,
+    checks: Optional[dict] = None,
+) -> None:
+    """Emite diagnóstico exclusivamente da estratégia Pullback.
+
+    O worker também possui um gate técnico legado, usado por outras
+    estratégias. Este log é a fonte legível do setup canônico do Pullback e
+    não deve ser reutilizado por Breakout ou Market Making.
+    """
+    payload = {
+        "strategy": STRATEGY_NAME,
+        "entry_timeframe": entry_label,
+        "context_timeframes": ["4h", "1d"],
+        "regime": regime,
+        "reason": reason,
+        "checks": checks or {},
+    }
+    for label, frame in (("entry", current), ("4h", four), ("1d", day)):
+        if frame is None:
+            continue
+        for field in ("time", "open", "high", "low", "close", "volume", "ema20", "ema50", "ema200", "atr", "rsi14", "volume_sma20"):
+            value = frame.get(field)
+            if pd.isna(value):
+                continue
+            if field == "time":
+                value = str(value)
+            else:
+                value = float(value)
+            payload.setdefault(label, {})[field] = value
+    logging.info("[PULLBACK][SETUP_DIAGNOSTIC] %s", json.dumps(payload, ensure_ascii=False, default=str, sort_keys=True))
+
+
+def _context_signal(one: pd.Series, four: pd.Series, day: pd.Series, regime: Optional[int], entry_label: str = "1h") -> PullbackSignal:
     values = [one.get("close"), one.get("atr"), one.get("ema20"), one.get("ema50"),
               one.get("volume_sma20"), one.get("rsi14"), four.get("ema50"),
               four.get("ema200"), day.get("ema20"), day.get("ema50")]
     if any(pd.isna(value) for value in values):
+        _log_setup_diagnostic(
+            entry_label=entry_label,
+            current=one,
+            four=four,
+            day=day,
+            regime=regime,
+            reason="indicadores_insuficientes",
+        )
         return PullbackSignal(False, None, "indicadores_insuficientes", regime, None, None, None, None, None)
 
     entry = float(one["close"])
@@ -125,18 +174,45 @@ def _context_signal(one: pd.Series, four: pd.Series, day: pd.Series, regime: Opt
     touched_short = float(one.high) >= min(float(one.ema20), float(one.ema50))
     bullish = touched_long and entry > float(one.ema20) and entry > float(one.open) and float(one.rsi14) >= 45 and float(one.rsi14) <= 68
     bearish = touched_short and entry < float(one.ema20) and entry < float(one.open) and float(one.rsi14) >= 32 and float(one.rsi14) <= 55
+    checks = {
+        "long_context_4h_daily": bool(long_context),
+        "short_context_4h_daily": bool(short_context),
+        "long_touch_ema20_or_ema50": bool(touched_long),
+        "short_touch_ema20_or_ema50": bool(touched_short),
+        "long_close_above_ema20": entry > float(one.ema20),
+        "short_close_below_ema20": entry < float(one.ema20),
+        "long_close_above_open": entry > float(one.open),
+        "short_close_below_open": entry < float(one.open),
+        "long_rsi_45_68": 45.0 <= float(one.rsi14) <= 68.0,
+        "short_rsi_32_55": 32.0 <= float(one.rsi14) <= 55.0,
+        "volume_ratio_min": float(volume_ratio),
+        "volume_ok": bool(volume_ok),
+    }
     if long_context and bullish and volume_ok:
+        _log_setup_diagnostic(entry_label=entry_label, current=one, four=four, day=day, regime=regime, reason="CONFIRMED_BUY", checks=checks)
         return PullbackSignal(True, "buy", "pullback_ema_tendencia_alta_4h_diario", regime, entry, entry - stop_mult * atr, entry + target_mult * atr, trail_mult * atr, atr, 3.0)
     if short_context and bearish and volume_ok:
+        _log_setup_diagnostic(entry_label=entry_label, current=one, four=four, day=day, regime=regime, reason="CONFIRMED_SELL", checks=checks)
         return PullbackSignal(True, "sell", "pullback_ema_tendencia_baixa_4h_diario", regime, entry, entry + stop_mult * atr, entry - target_mult * atr, trail_mult * atr, atr, 3.0)
+    _log_setup_diagnostic(
+        entry_label=entry_label,
+        current=one,
+        four=four,
+        day=day,
+        regime=regime,
+        reason="sem_pullback_com_confluencia",
+        checks=checks,
+    )
     return PullbackSignal(False, None, "sem_pullback_com_confluencia", regime, entry, None, None, None, atr, 0.0)
 
 
 def _avaliar_setup_entrada(df_entry: pd.DataFrame, df_4h: pd.DataFrame, df_daily: pd.DataFrame, regime: Optional[int] = None, entry_label: str = "1h") -> PullbackSignal:
     """Avalia somente candles fechados já fornecidos pelo worker."""
     if not _regime_allowed(regime):
+        logging.info("[PULLBACK][SETUP_DIAGNOSTIC] %s", json.dumps({"strategy": STRATEGY_NAME, "reason": "regime_nao_elegivel", "regime": regime}, ensure_ascii=False))
         return PullbackSignal(False, None, "regime_nao_elegivel", int(regime), None, None, None, None, None)
     if len(df_entry) < 60 or len(df_4h) < 220 or len(df_daily) < 55:
+        logging.info("[PULLBACK][SETUP_DIAGNOSTIC] %s", json.dumps({"strategy": STRATEGY_NAME, "reason": f"dados_{entry_label}_4h_diario_insuficientes", "counts": {"entry": len(df_entry), "4h": len(df_4h), "1d": len(df_daily)}}, ensure_ascii=False))
         return PullbackSignal(False, None, f"dados_{entry_label}_4h_diario_insuficientes", regime, None, None, None, None, None)
     one = _enrich(df_entry)
     four = _enrich(df_4h)
@@ -145,10 +221,12 @@ def _avaliar_setup_entrada(df_entry: pd.DataFrame, df_4h: pd.DataFrame, df_daily
     current_four = _latest_asof(four, current["time"], closed_context=True)
     current_day = _latest_asof(day, current["time"], closed_context=True)
     if current_four is None or current_day is None:
+        _log_setup_diagnostic(entry_label=entry_label, current=current, four=current_four, day=current_day, regime=regime, reason="contexto_4h_diario_ausente")
         return PullbackSignal(False, None, "contexto_4h_diario_ausente", regime, None, None, None, None, None)
     previous = one.iloc[-2]
-    signal = _context_signal(current, current_four, current_day, regime)
+    signal = _context_signal(current, current_four, current_day, regime, entry_label=entry_label)
     if signal.ok and ((signal.side == "buy" and float(current.close) <= float(previous.close)) or (signal.side == "sell" and float(current.close) >= float(previous.close))):
+        _log_setup_diagnostic(entry_label=entry_label, current=current, four=current_four, day=current_day, regime=regime, reason="fechamento_nao_confirma_movimento")
         return PullbackSignal(False, signal.side, "fechamento_nao_confirma_movimento", regime, signal.entry, None, None, None, signal.atr)
     return signal
 
